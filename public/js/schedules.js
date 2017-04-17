@@ -3,11 +3,10 @@ define([], function() {
         init: function(app) {
             app.controller("ScheduleCtrl", function ($scope, ScheduleService) {
 
-                $scope.activeSchedules = [];
+                $scope.activeSchedules = ScheduleService.activeSchedules;
 
                 var update = function() {
                     ScheduleService.get();
-                    $scope.activeSchedules = ScheduleService.activeSchedules;
                     $scope.$apply();
                 };
                 

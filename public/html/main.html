@@ -41,12 +41,12 @@
             <div class="clearfix"></div>
 
             <!-- sidebar menu -->
-            <div id="sidebar-menu" class="main_menu_side hidden-print main_menu" ng-controller="UserCtrl">>
+            <div id="sidebar-menu" class="main_menu_side hidden-print main_menu" ng-controller="UserCtrl">
               <div class="menu_section">
                 <h3>General</h3>
                 <ul class="nav side-menu">
                   <li ng-show="user.loggedIn"><a><i class="fa fa-calendar"></i>Create Schedule </a></li>
-                  <li ng-show="user.loggedIn"><a><i class="fa icon-raspberrypi"></i>Raspberry Pi</a></li>
+                  <li ng-show="user.loggedIn" ng-controller="RPiCtrl"><a ng-click="open()"><i class="fa icon-raspberrypi"></i>Raspberry Pi</a></li>
                   <li ng-show="!user.loggedIn"><a ng-click="login()"><i class="fa fa-sign-in"></i>Login </a></li>
                   <li ng-show="!user.loggedIn"><a ng-click="register()"><i class="fa fa-user-plus"></i>Register </a></li>
                   <li ng-show="user.loggedIn"><a ng-click="logout()"><i class="fa fa-sign-out"></i>Logout </a></li>
@@ -99,7 +99,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
     <!-- Custom Theme Scripts -->
-    <script src="js/custom.min.js"></script>
+    <script src="js/lib/custom.min.js"></script>
 	
   </body>
 </html>
