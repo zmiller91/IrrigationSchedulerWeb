@@ -4,3 +4,6 @@
 [submodule "public/js/lib/js-common"]
 	path = public/js/lib/js-common
 	url = https://github.com/zmiller91/js-common
+[submodule "lib/php/php-common"]
+	path = lib/php/php-common
+	url = https://github.com/zmiller91/php-common
