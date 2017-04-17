@@ -1,12 +1,14 @@
 define([
-    'schedules'
+    'schedules',
+    'lib/js-common/user/user'
 ],
 
-  function(schedules){
+  function(schedules, user){
       
     // Create the base module for the page
-    var is = angular.module('irrigation-schedule', []);
+    var is = angular.module('irrigation-schedule', ['ui.bootstrap']);
     schedules.init(is);
+    user.init(is);
     
     // Init the controllers, directives, and services for all the components
     // on the page
