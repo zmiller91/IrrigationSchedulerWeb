@@ -1,0 +1,3 @@
+[submodule "public/js/lib/requirejs"]
+	path = public/js/lib/requirejs
+	url = https://github.com/requirejs/requirejs.git
