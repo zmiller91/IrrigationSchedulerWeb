@@ -1,81 +1,61 @@
 define([], function() {
     return {
         init: function(app) {
-            app.controller("ScheduleCtrl", function ($scope) {
+            app.controller("ScheduleCtrl", function ($scope, ScheduleService) {
 
-                var update = function() {}
+                $scope.activeSchedules = [];
+
+                var update = function() {
+                    ScheduleService.get();
+                    $scope.activeSchedules = ScheduleService.activeSchedules;
+                    $scope.$apply();
+                };
+                
                 angular.element(document).ready(update);
             })
 
-            .directive("journal", function() {
+            .directive("activeSchedules", function() {
               return {
-                templateUrl: 'html/journal/journal.html'
+                templateUrl: 'html/active-schedules.html'
               };
             })
             
             .service('ScheduleService', ['$http', function($http) {
                     
-                this.journal = [];
-                    
-                this.get = function(grow, success, error) {
-                    $http.get('api/journal', {params: {grow: grow}})
-                        .then(function(response) {
-                            this.journal = response["data"];
-                            if (success) {
-                                success(this.journal);
-                            }
-                        }, function(response) {
-                            if (error) {
-                                error(response);
-                            }
+                this.activeSchedules = [];
+        
+                this.get = function(success, error) {
+                    this.activeSchedules = [
+                        {
+                            name: "Front Lawn PM",
+                            controller: "ck83jl",
+                            zone: "1",
+                            dow: "MON, WED, FRI",
+                            start: "7:45PM",
+                            duration: "0:20"
+                        },
+                        {
+                            name: "Front Lawn AM",
+                            controller: "ck83jl",
+                            zone: "1",
+                            dow: "MON, FRI",
+                            start: "6:45Am",
+                            duration: "0:20"
+                        },
+                        {
+                            name: "Garden",
+                            controller: "ck83jl",
+                            zone: "2",
+                            dow: "MON, FRI",
+                            start: "6:45PM",
+                            duration: "1:00"
                         }
-                    );
-                };
+                    ];
                     
-                this.post = function(entry, success, error) {
-                    $http.post('api/journal', {text: entry})
-                        .then(function(response) {
-                            this.journal = response["data"];
-                            if (success) {
-                                success(this.journal);
-                            }
-                        }, function(response) {
-                            if (error) {
-                                error(response);
-                            }
-                        }
-                    );
                 };
-                    
-                this.delete = function(entry, success, error) {
-                    $http.delete('api/journal', {data: {record: entry}})
-                        .then(function(response) {
-                            this.journal = response["data"];
-                            if (success) {
-                                success(this.journal);
-                            }
-                        }, function(response) {
-                            if (error) {
-                                error(response);
-                            }
-                        }
-                    );
-                };
-                    
-                this.patch = function(entry, success, error) {
-                    $http.patch('api/journal', {record: entry})
-                        .then(function(response) {
-                            this.journal = response["data"];
-                            if (success) {
-                                success(this.journal);
-                            }
-                        }, function(response) {
-                            if (error) {
-                                error(response);
-                            }
-                        }
-                    );
-                };
+                this.post = function(entry, success, error) {};
+                this.delete = function(entry, success, error) {};
+                this.patch = function(entry, success, error) {};
             }]);
         }
     };

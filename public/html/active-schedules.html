@@ -1,16 +1,62 @@
-<!DOCTYPE html>
-<!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
--->
-<html>
-    <head>
-        <title>TODO supply a title</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    </head>
-    <body>
-        <div>TODO write content</div>
-    </body>
-</html>
+<div class="x_panel">
+    <div class="x_title">
+      <h2>Active Schedules</h2>
+      <div class="clearfix"></div>
+    </div>
+</div>
+<div class="x_panel"  ng-repeat="schedule in activeSchedules">
+    <div class="x_content">
+      <article class="media event">
+        <div class="media-body">
+            <div class="row">
+
+                <div class="col-lg-1 col-md-4 col-sm-5 col-xs-5">
+                  <a class="title" href="">Name</a>
+                  <p>{{ schedule.name }}</p>
+                </div>
+
+                <div class="col-lg-1 col-md-4 col-sm-4 col-xs-4">
+                  <a class="title" href="">Controller</a>
+                  <p>{{ schedule.controller }}</p>
+                </div>
+
+                <div class="col-lg-1 col-md-4 col-sm-3 col-xs-3">
+                  <a class="title" href="">Zone</a>
+                  <p>{{ schedule.zone }}</p>
+                </div>
+
+                <div class="col-lg-2 col-md-4 col-sm-5 col-xs-5">
+                  <a class="title" href="">Day of Week</a>
+                  <p>{{ schedule.dow }}</p>
+                </div>
+
+                <div class="col-lg-2 col-md-4 col-sm-4 col-xs-4">
+                  <a class="title" href="">Start Time</a>
+                  <p>{{ schedule.start }}</p>
+                </div>
+
+                <div class="col-lg-1 col-md-4 col-sm-3 col-xs-3">
+                  <a class="title" href="">Duration</a>
+                  <p>{{ schedule.duration }}</p>
+                </div>
+
+                <div class="col-lg-1 col-md-3 col-sm-3 col-xs-3 action">
+                  <i class="fa fa-pause-circle-o" aria-hidden="true" style="font-size:35px;"></i>
+                </div>
+
+                <div class="col-lg-1 col-md-3 col-sm-3 col-xs-3 action">
+                  <i class="fa fa-stop-circle-o" aria-hidden="true" style="font-size:35px;"></i>
+                </div>
+
+                <div class="col-lg-1 col-md-3 col-sm-3 col-xs-3 action">
+                  <i class="fa fa-wrench" aria-hidden="true" style="font-size:35px;"></i>
+                </div>
+
+                <div class="col-lg-1 col-md-3 col-sm-3 col-xs-3 action">
+                  <i class="fa fa-trash-o" aria-hidden="true" style="font-size:35px;"></i>
+                </div>
+            </div>
+        </div>
+      </article>
+    </div>
+  </div>
