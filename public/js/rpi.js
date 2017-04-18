@@ -47,6 +47,13 @@ define([], function() {
                 this.rpis = [];
                 this.get = function(userId, success, error) {
                     var $this = this;
+                    if(this.rpis.length > 0) {
+                        if (success) {
+                            success(null);
+                        }
+                        return;
+                    }
+                    
                     $http.get('api/rpi')
                         .then(function(response) {
                             for(var i in response['data']) {
