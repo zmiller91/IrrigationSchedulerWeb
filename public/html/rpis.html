@@ -1,0 +1,39 @@
+<div id="rpis" class="right_col" role="main">
+  <div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="x_panel">
+            <div class="x_title">
+              <h2>Raspberry Pis</h2>
+              <div class="clearfix"></div>
+            </div>
+        </div>
+        <div class="x_panel"  ng-repeat="pi in rpis track by $index">
+            <div class="x_content">
+              <article class="media event">
+                <div class="media-body">
+                    <div class="row">
+
+                        <div class="col-lg-5 col-md-5 col-sm-5 col-xs-5">
+                          <a class="title" href="">ID</a>
+                          <p>{{ pi.id }}</p>
+                        </div>
+
+                        <div class="col-lg-5 col-md-5 col-sm-5 col-xs-5">
+                          <a class="title" href="">Created</a>
+                          <p>{{ pi.created_date }}</p>
+                        </div>
+
+                        <div class="close col-lg-2 col-md-2 col-sm-2 col-xs-2">
+                          <a ng-click="remove(pi.id)"><i class="fa fa-times" aria-hidden="true" style="font-size:35px;"></i></a>
+                        </div>
+                    </div>
+                </div>
+              </article>
+            </div>
+        </div>
+        <button type="button" class="btn btn-primary x_panel" ng-click="create()">
+            Create
+        </button>
+    </div>
+  </div>
+</div>

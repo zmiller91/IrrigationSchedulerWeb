@@ -1,0 +1,48 @@
+<div id="login" class="right_col" role="main">
+  <div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="x_panel">
+            <div class="x_title">
+              <h2>Log In</h2>
+              <div class="clearfix"></div>
+            </div>
+        </div>
+        <div class="x_panel">
+            <div class="x_content">
+              <article class="media event">
+                <form name="login">
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input ng-keypress="keypress($event)" ng-disabled="loading"
+                               name="username" ng-model="creds.name" class="form-control" 
+                               type="text"  required />
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input ng-keypress="keypress($event)"  ng-disabled="loading"
+                               name="password" ng-model="creds.pass" class="form-control" 
+                               type="Password" required />
+                    </div>
+                </form>
+                <div class="error-container" ng-repeat="e in user.errors track by $index">
+                    <div ng-switch on="e" class="alert alert-danger">
+                        <div ng-switch-when="invalid_username">
+                            Invalid username or password.
+                        </div>
+                        <div ng-switch-when="invalid_password">
+                            Invalid username or password.
+                        </div>
+                        <div ng-switch-default>
+                            {{e}}
+                        </div>
+                    </div>
+                </div>
+              </article>
+            </div>
+        </div>
+        <button type="button" class="btn btn-primary x_panel" ng-click="submit()">
+            Submit
+        </button>
+    </div>
+  </div>
+</div>

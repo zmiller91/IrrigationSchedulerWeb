@@ -8,7 +8,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Gentelella Alela! | </title>
+    <title>Lawn Cron | Automate Your Chores</title>
+    <base href="/">
 
     <!-- jQuery -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -18,14 +19,17 @@
 
     <!-- Custom Theme Style -->
     <link href="css/custom.min.css" rel="stylesheet">
-    <link href="css/irrigation-scheduler.css" rel="stylesheet">
+    <link href="css/lawncron.css" rel="stylesheet">
     <link type="text/css" href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <link type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-mfizz/2.4.1/font-mfizz.min.css" rel="stylesheet">
     
-    
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6//angular-route.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.2.0/ui-bootstrap-tpls.js"></script>
-    <script data-main="/js/irrigation-scheduler" src="/js/lib/requirejs/require.js"></script>
+    <script data-main="/js/lawncron" src="/js/lib/requirejs/require.js"></script>
+
+    <!-- Bootstrap -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     
   </head>
 
@@ -35,7 +39,7 @@
         <div class="col-md-3 left_col">
           <div class="left_col scroll-view">
             <div class="navbar nav_title" style="border: 0;">
-              <a href="index.html" class="site_title"><i class="fa fa-leaf"></i> <span>Irrigation Station</span></a>
+              <a href="index.html" class="site_title"><i class="fa fa-leaf"></i> <span>LAWN CRON</span></a>
             </div>
 
             <div class="clearfix"></div>
@@ -45,9 +49,9 @@
               <div class="menu_section">
                 <h3>General</h3>
                 <ul class="nav side-menu">
-                  <li ng-show="user.loggedIn"><a><i class="fa fa-calendar"></i>Create Schedule </a></li>
-                  <li ng-show="user.loggedIn" ng-controller="RPiCtrl"><a ng-click="open()"><i class="fa icon-raspberrypi"></i>Raspberry Pi</a></li>
-                  <li ng-show="!user.loggedIn"><a ng-click="login()"><i class="fa fa-sign-in"></i>Login </a></li>
+                  <li ng-show="user.loggedIn"><a href="/schedules"><i class="fa fa-calendar"></i>Schedules </a></li>
+                  <li ng-show="user.loggedIn"><a href="/rpis"><i class="fa icon-raspberrypi"></i>Raspberry Pis</a></li>
+                  <li ng-show="!user.loggedIn"><a href="/login"><i class="fa fa-sign-in"></i>Login </a></li>
                   <li ng-show="!user.loggedIn"><a ng-click="register()"><i class="fa fa-user-plus"></i>Register </a></li>
                   <li ng-show="user.loggedIn"><a ng-click="logout()"><i class="fa fa-sign-out"></i>Logout </a></li>
                 </ul>
@@ -74,14 +78,7 @@
         <!-- /top navigation -->
 
         <!-- page content -->
-        <div class="right_col" role="main">
-
-          <div class="row">
-            <div class="col-md-12 col-sm-12 col-xs-12">
-                <div ng-controller="ScheduleCtrl" active-schedules></div>
-            </div>
-          </div>
-        </div>
+        <ng-view></ng-view>
         <!-- /page content -->
 
         <!-- footer content -->
@@ -94,12 +91,5 @@
         <!-- /footer content -->
       </div>
     </div>
-
-    <!-- Bootstrap -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-
-    <!-- Custom Theme Scripts -->
-    <script src="js/lib/custom.min.js"></script>
-	
   </body>
 </html>

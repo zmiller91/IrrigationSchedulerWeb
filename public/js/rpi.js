@@ -1,25 +1,7 @@
 define([], function() {
     return {
         init: function(app) {
-            app.controller("RPiCtrl", function ($scope, $uibModal, RPiService) {
-
-                $scope.rpis = [];
-                $scope.open = function () {
-                    $uibModal.open({
-                        templateUrl: 'html/rpi-modal.html',
-                        controller: 'RPiModalCtrl',
-                        size: 'sm'
-                    });
-                };  
-
-                var update = function() {
-                    $scope.rpis = RPiService.rpis;
-                };
-                
-                angular.element(document).ready(update);
-            })
-                    
-            .controller("RPiModalCtrl", function ($scope, $uibModalInstance, RPiService) {
+            app.controller("RPiCtrl", function ($scope, RPiService) {
 
                 $scope.rpis = RPiService.rpis;
 
@@ -32,14 +14,13 @@ define([], function() {
                 };
 
                 $scope.cancel = function () {
-                    $uibModalInstance.dismiss('cancel');
                 };
                 
                 var update = function() {
-                    $scope.rpis = RPiService.rpis;;
+                    $scope.rpis = RPiService.rpis;
                 };
                 
-                RPiService.get(update)
+                RPiService.get(update);
             })
             
             .service('RPiService', ['$http', function($http) {
