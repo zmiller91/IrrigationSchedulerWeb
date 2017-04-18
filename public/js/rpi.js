@@ -24,25 +24,81 @@ define([], function() {
                 $scope.rpis = RPiService.rpis;
 
                 $scope.create = function () {
-                    RPiService.put(function(rpi) {});
+                    RPiService.put(update);
+                };
+
+                $scope.remove = function (id) {
+                    RPiService.delete(id, update);
                 };
 
                 $scope.cancel = function () {
                     $uibModalInstance.dismiss('cancel');
                 };
+                
+                var update = function() {
+                    $scope.rpis = RPiService.rpis;;
+                };
+                
+                RPiService.get(update)
             })
             
             .service('RPiService', ['$http', function($http) {
                     
-                this.rpis = [{id: 'd289df'}, {id: 'fdj2fs'}, {id: 'ab30dk'}];
-        
-                this.get = function(success, error) {};
+                this.rpis = [];
+                this.get = function(userId, success, error) {
+                    var $this = this;
+                    $http.get('api/rpi')
+                        .then(function(response) {
+                            for(var i in response['data']) {
+                                $this.rpis.push(response['data'][i]);
+                            }
+                            if (success) {
+                                success(response);
+                            }
+                        }, function(response) {
+                            if (error) {
+                                error(response);
+                            }
+                        }
+                    );
+                };
                 
                 this.put = function(success, error) {
-                    var id = Math.random().toString(36).substring(6);
-                    var rpi = {id: id};
-                    this.rpis.push(rpi);
-                    success(rpi);
+                    var $this = this;
+                    $http.put('api/rpi')
+                        .then(function(response) {
+                            $this.rpis.push(response['data']);
+                            if (success) {
+                                success(response);
+                            }
+                        }, function(response) {
+                            if (error) {
+                                error(response);
+                            }
+                        }
+                    );
+                };
+                
+                this.delete = function(rpiId, success, error) {
+                    var $this = this;
+                    $http.delete('api/rpi', {data: {rpi_id: rpiId}})
+                        .then(function(response) {
+                            for(var i = 0; i < $this.rpis.length; i++) {
+                                if($this.rpis[i]['id'] === rpiId) {
+                                    $this.rpis.splice(i, 1);
+                                    break;
+                                }
+                            }
+                            
+                            if (success) {
+                                success(response);
+                            }
+                        }, function(response) {
+                            if (error) {
+                                error(response);
+                            }
+                        }
+                    );
                 };
             }]);
         }

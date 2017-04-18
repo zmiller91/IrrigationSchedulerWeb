@@ -7,7 +7,7 @@ define([], function() {
 
                 var update = function() {
                     ScheduleService.get();
-                    $scope.$apply();
+                    $scope.activeSchedules = ScheduleService.activeSchedules;
                 };
                 
                 angular.element(document).ready(update);

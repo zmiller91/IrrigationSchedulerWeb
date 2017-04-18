@@ -25,11 +25,11 @@
         </div>
         
         <div class="col-lg-2">
-            <i class="fa fa-times" aria-hidden="true"></i>
+            <a ng-click="remove(pi.id)"><i class="fa fa-times" aria-hidden="true"></i></a>
         </div>
     </div>
 </div>
 <div class="modal-footer">
-    <button type="button" class="btn btn-default" ng-click="create()">Create</button>
-    <button type="button" class="btn btn-primary" ng-click="cancel()">Cancel</button>
+    <button type="button" class="btn btn-default" ng-click="cancel()">Cancel</button>
+    <button type="button" class="btn btn-primary" ng-click="create()">Create</button>
 </div>

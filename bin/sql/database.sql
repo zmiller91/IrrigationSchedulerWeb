@@ -22,3 +22,12 @@ create table user_sessions(
     created_date datetime,
     updated_date datetime
 );
+
+create table rpi (
+	id varchar(16) not null,
+    user_id int,
+    created_date date,
+    primary key(id),
+    foreign key (user_id) references users(id),
+    index `user` (user_id)
+);
