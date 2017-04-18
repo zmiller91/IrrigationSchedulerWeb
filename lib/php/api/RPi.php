@@ -21,7 +21,12 @@ class RPi extends Service {
 
     protected function authorize() {
         $this->m_oUser->authorize();
-        return $this->m_oUser->m_bLoggedIn;
+        $authorized = $this->m_oUser->m_bLoggedIn;
+        if(!$authorized) {
+            $this->setStatusCode(401);
+        }
+        
+        return $authorized;
     }
 
     protected function validate() {

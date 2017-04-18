@@ -14,7 +14,10 @@
 class RPiTable extends BaseTable {
 
     public function select($userId, $rpiId = null) {
-        $filter = $this->createAndEqualsFilter(array("user_id" => $userId, "id" => $rpiId));
+        $filter = $this->createAndEqualsFilter(array(
+            "user_id" => $this->escape($userId), 
+            "id" => $this->escape($rpiId)));
+        
         $sql = 
 <<<EOD
             SELECT * 
@@ -26,7 +29,10 @@ EOD;
     }
 
     public function delete($userId, $rpiId = null) {
-        $filter = $this->createAndEqualsFilter(array("user_id" => $userId, "id" => $rpiId));
+        $filter = $this->createAndEqualsFilter(array(
+            "user_id" => $this->escape($userId), 
+            "id" => $this->escape($rpiId)));
+        
         $sql = 
 <<<EOD
             DELETE 
@@ -38,6 +44,7 @@ EOD;
     }
 
     public function create($userId) {
+        $userId = $this->escape($userId);
         $key = substr(md5(uniqid(true)), 0, 8);
         $sql = 
 <<<EOD
