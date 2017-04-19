@@ -26,7 +26,7 @@ define([], function() {
             .service('RPiService', ['$http', function($http) {
                     
                 this.rpis = [];
-                this.get = function(userId, success, error) {
+                this.get = function(success, error) {
                     var $this = this;
                     if(this.rpis.length > 0) {
                         if (success) {
@@ -37,6 +37,7 @@ define([], function() {
                     
                     $http.get('api/rpi')
                         .then(function(response) {
+                            $this.rpis.splice(0, $this.rpis.length);
                             for(var i in response['data']) {
                                 $this.rpis.push(response['data'][i]);
                             }

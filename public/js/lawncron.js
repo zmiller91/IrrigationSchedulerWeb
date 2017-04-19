@@ -11,7 +11,7 @@ define([
   function(schedules, rpi, login, registration, routes, user){
       
     // Create the base module for the page
-    var lc = angular.module('irrigation-schedule', ['ui.bootstrap', 'ngRoute']);
+    var lc = angular.module('irrigation-schedule', ['ui.bootstrap', 'ngRoute', 'ui.select']);
     
     // Init the controllers, directives, and services for all the components
     // on the page

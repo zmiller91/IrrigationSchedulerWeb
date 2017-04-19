@@ -65,3 +65,16 @@ button.x_panel {
 #rpis .close{
     text-align: right;
 }
+
+.ui-select-match .ui-select-toggle {
+    margin-right: 0px;
+}
+
+.media, .media-body {
+    overflow: visible !important;
+}
+
+input[disabled] {
+    box-shadow: none !important;
+    opacity: .65 !important;
+}
