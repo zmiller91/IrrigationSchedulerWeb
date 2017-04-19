@@ -2,12 +2,13 @@ define([
     'schedules',
     'rpi',
     'login',
+    'registration',
     'routes',
     'lib/js-common/user/user',
     'lib/custom.min'
 ],
 
-  function(schedules, rpi, login, routes, user){
+  function(schedules, rpi, login, registration, routes, user){
       
     // Create the base module for the page
     var lc = angular.module('irrigation-schedule', ['ui.bootstrap', 'ngRoute']);
@@ -19,6 +20,7 @@ define([
     schedules.init(lc);
     rpi.init(lc);
     login.init(lc);
+    registration.init(lc);
     
     // Bootstrap the page
     angular.bootstrap(document, ['irrigation-schedule']);

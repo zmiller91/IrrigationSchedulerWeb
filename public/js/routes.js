@@ -19,6 +19,11 @@ define([], function() {
                             controller: 'LoginPageCtrl'
                     })
 
+                    .when('/register', {
+                            templateUrl: 'html/registration.html',
+                            controller: 'RegistrationPageCtrl'
+                    })
+
                     .otherwise({
                         redirectTo: '/schedules'
                     });

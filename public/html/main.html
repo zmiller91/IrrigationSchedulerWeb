@@ -52,7 +52,7 @@
                   <li ng-show="user.loggedIn"><a href="/schedules"><i class="fa fa-calendar"></i>Schedules </a></li>
                   <li ng-show="user.loggedIn"><a href="/rpis"><i class="fa icon-raspberrypi"></i>Raspberry Pis</a></li>
                   <li ng-show="!user.loggedIn"><a href="/login"><i class="fa fa-sign-in"></i>Login </a></li>
-                  <li ng-show="!user.loggedIn"><a ng-click="register()"><i class="fa fa-user-plus"></i>Register </a></li>
+                  <li ng-show="!user.loggedIn"><a href="/register"><i class="fa fa-user-plus"></i>Register </a></li>
                   <li ng-show="user.loggedIn"><a ng-click="logout()"><i class="fa fa-sign-out"></i>Logout </a></li>
                 </ul>
               </div>
