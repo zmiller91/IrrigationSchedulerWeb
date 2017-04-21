@@ -1,33 +1,52 @@
 define([], function() {
     return {
         init: function(app) {
-            app.controller("ScheduleCtrl", function ($scope, ScheduleService, RPiService) {
+            app.controller("ScheduleCtrl", function ($scope, ScheduleService, RPiService, User) {
 
-                $scope.activeSchedules = ScheduleService.activeSchedules;
+                $scope.schedules = ScheduleService.schedules;
                 $scope.rpis = RPiService.rpis;
                 $scope.dows = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
                 $scope.zones = [1, 2, 3, 4];
                 
                 var update = function() {
-                    $scope.activeSchedules = ScheduleService.activeSchedules;
+                    $scope.schedules = ScheduleService.schedules;
                     $scope.rpis = RPiService.rpis;
                 };
                 
-                $scope.toggle = function(schedule) {
-                    schedule.enabled = !schedule.enabled;
-                }
+                $scope.update = function(schedule) {
+                    ScheduleService.put(schedule);
+                };
                 
                 $scope.create = function() {
-                    $scope.activeSchedules = ScheduleService.addNew();
-                    $scope.activeSchedules[0].enabled = true;
+                    ScheduleService.createNew();
+                    $scope.schedules[0].enabled = true;
+                };
+                
+                $scope.delete = function(schedule) {
+                    ScheduleService.delete(schedule);
+                };
+                
+                $scope.play = function(schedule) {
+                    ScheduleService.post(schedule);
+                };
+                
+                $scope.pause = function(schedule) {
+                    ScheduleService.patch(schedule);
+                };
+                
+                $scope.stop = function(schedule) {
+                    ScheduleService.post(schedule);
+                };
+                
+                if(User.loggedIn) {
+                    ScheduleService.get(update);
+                    RPiService.get(update);
                 }
                 
-                ScheduleService.get(update);
-                RPiService.get(update);
                 angular.element(document).ready(update);
             })
 
-            .directive("activeSchedules", function() {
+            .directive("schedules", function() {
               return {
                 templateUrl: 'html/active-schedules.html'
               };
@@ -35,46 +54,91 @@ define([], function() {
             
             .service('ScheduleService', ['$http', function($http) {
                     
-                this.activeSchedules = [];
+                this.schedules = [];
+        
+                this.createNew = function() {
+                    this.schedules.unshift({});
+                }
         
                 this.get = function(success, error) {
-                    this.activeSchedules = [
-                        {
-                            name: "Front Lawn PM",
-                            rpi: {id: "ck83jl"},
-                            zone: "1",
-                            dow: ["MON", "WED", "FRI"],
-                            start: "7:45PM",
-                            duration: "0:20"
-                        },
-                        {
-                            name: "Front Lawn AM",
-                            rpi: {id: "ck83jl"},
-                            zone: "1",
-                            dow: ["MON", "FRI"],
-                            start: "6:45Am",
-                            duration: "0:20"
-                        },
-                        {
-                            name: "Garden",
-                            rpi: {id: "ck83jl"},
-                            zone: "2",
-                            dow: ["MON", "FRI"],
-                            start: "6:45PM",
-                            duration: "1:00"
-                        }
-                    ];
                     
+                    var $this = this;
+                    $http.get('api/schedule').then(
+                            
+                        function(response) {
+                            $this.schedules.splice(0, $this.schedules.length);
+                            for(var i in response['data']) {
+                                $this.schedules.push(response['data'][i]);
+                            }
+                            
+                            success && success(response);
+                        }, 
+
+                        function(response) {
+                            error && error(response);
+                        }
+                    );
                 };
                 
-                this.addNew = function(){
-                    this.activeSchedules.unshift({});
-                    return this.activeSchedules;
+                this.post = function(entry, success, error) {
+                    
+                    var $this = this;
+                    $http.post('api/schedule').then(
+                            
+                        function(response) {
+                            success && success(response);
+                        }, 
+
+                        function(response) {
+                            error && error(response);
+                        }
+                    );
                 };
                 
-                this.post = function(entry, success, error) {};
-                this.delete = function(entry, success, error) {};
-                this.patch = function(entry, success, error) {};
+                this.delete = function(entry, success, error) {
+                    
+                    var $this = this;
+                    $http.delete('api/schedule').then(
+                            
+                        function(response) {
+                            success && success(response);
+                        }, 
+
+                        function(response) {
+                            error && error(response);
+                        }
+                    );
+                };
+                
+                this.patch = function(entry, success, error) {
+                    
+                    var $this = this;
+                    $http.patch('api/schedule').then(
+                            
+                        function(response) {
+                            success && success(response);
+                        }, 
+
+                        function(response) {
+                            error && error(response);
+                        }
+                    );
+                };
+                
+                this.put = function(schedule, success, error) {
+                    
+                    var $this = this;
+                    $http.put('api/schedule', schedule).then(
+                            
+                        function(response) {
+                            success && success(response);
+                        }, 
+
+                        function(response) {
+                            error && error(response);
+                        }
+                    );
+                };
             }]);
         }
     };

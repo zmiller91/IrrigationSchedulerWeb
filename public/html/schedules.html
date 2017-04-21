@@ -12,7 +12,7 @@
             <button type="button" class="btn btn-primary x_panel" ng-click="create()">
                 Create
             </button>
-            <div class="x_panel" ng-repeat="schedule in activeSchedules">
+            <div class="x_panel" ng-repeat="schedule in schedules">
                 <div class="x_content">
                   <article class="media event">
                     <div class="media-body">
@@ -23,7 +23,8 @@
                                         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                                             <div class="form-group">
                                               <label>Name</label>
-                                              <input class="form-control" value="{{ schedule.name }}" ng-disabled="!schedule.enabled">
+                                              <input class="form-control" ng-model="schedule.name"
+                                                     ng-disabled="!schedule.enabled">
                                             </div>
                                         </div>
 
@@ -60,14 +61,16 @@
                                         <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
                                             <div class="form-group">
                                               <label>Start</label>
-                                              <input class="form-control" value="{{ schedule.start }}" ng-disabled="!schedule.enabled">
+                                              <input class="form-control"  ng-model="schedule.start"
+                                                     ng-disabled="!schedule.enabled">
                                             </div>
                                         </div>
 
                                         <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
                                             <div class="form-group">
                                               <label>Duration</label>
-                                              <input class="form-control" value="{{ schedule.duration }}" ng-disabled="!schedule.enabled">
+                                              <input class="form-control" ng-model="schedule.duration"
+                                                     ng-disabled="!schedule.enabled">
                                             </div>
                                         </div>
                                     </div>
@@ -88,25 +91,32 @@
 
                                     <div class="row">
                                         <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 action">
-                                          <i class="fa fa-pause-circle-o" aria-hidden="true" style="font-size:35px;" ng-show="!schedule.enabled"></i>
+                                          <a ng-click="stop(schedule)" ng-show="!schedule.enabled" href>
+                                            <i class="fa fa-stop-circle-o" aria-hidden="true" style="font-size:35px;"></i>
+                                          </a>
                                         </div>
 
                                         <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 action">
-                                          <i class="fa fa-stop-circle-o" aria-hidden="true" style="font-size:35px;" ng-show="!schedule.enabled"></i>
+                                          <a ng-click="play(schedule)" ng-show="!schedule.enabled" href>
+                                            <i class="fa fa-play-circle-o" aria-hidden="true" style="font-size:35px;"></i>
+                                          </a>
                                         </div>
 
                                         <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 action">
                                             <a ng-click="toggle(schedule)" ng-show="!schedule.enabled" href>
                                                 <i class="fa fa-wrench" aria-hidden="true" style="font-size:35px;"></i>
                                             </a>
-                                            <a ng-click="toggle(schedule)" ng-show="schedule.enabled" href>
+                                            <a ng-click="cancel(schedule)" ng-show="schedule.enabled" href>
                                                 <i class="fa fa-times" aria-hidden="true" style="font-size:35px;"></i>
                                             </a>
                                         </div>
 
                                         <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 action">
-                                          <i class="fa fa-trash-o" aria-hidden="true" style="font-size:35px;" ng-show="!schedule.enabled"></i>
-                                          <a ng-click="toggle(schedule)" ng-show="schedule.enabled" href>
+                                            
+                                          <a ng-click="delete(schedule)" ng-show="!schedule.enabled" href>
+                                            <i class="fa fa-trash-o" aria-hidden="true" style="font-size:35px;"></i>
+                                          </a>
+                                          <a ng-click="update(schedule)" ng-show="schedule.enabled" href>
                                             <i class="fa fa-check" aria-hidden="true" style="font-size:35px;"></i>
                                           </a>
                                         </div>
