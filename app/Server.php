@@ -17,4 +17,5 @@ define('CACHE_DIR', ROOT_PATH . "cache");
 define('AUTOLOAD_CACHE_PATH', CACHE_DIR . "/classpaths.cache");
 
 define('PYTHON', "C:\Python27\python.exe");
-define('DEBUG', false);
+define('DEBUG', true);
+define('RMQSEND', "C:\Users\zmiller\PycharmProjects\IrrigationScheduler\RMQSend.py");

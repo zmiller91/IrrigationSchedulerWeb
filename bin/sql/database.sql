@@ -34,16 +34,18 @@ create table rpi (
 
 create table schedule (
 	id int not null auto_increment,
+    user int not null,
     rpi_id varchar(16) not null,
     name varchar(256),
     zone tinyint,
     dow varchar(64),
-    start varchar(5),
+    start varchar(8),
     duration varchar(5),
     created_date datetime,
     modified_date timestamp default 
 			current_timestamp on update current_timestamp,
     primary key(id),
+    foreign key (user) references users(id),
     foreign key (rpi_id) references rpi(id),
     index `rpi` (rpi_id)
 );
