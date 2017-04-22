@@ -10,28 +10,53 @@ define([], function() {
                 
                 $scope.toggle = function(schedule) {
                     schedule.enabled = !schedule.enabled;
+                    if(schedule.enabled) {
+                        schedule.parent = null;
+                        schedule.clone = null;
+                        schedule.clone = clone(schedule);
+                        schedule.clone.parent = schedule;
+                    }
+                    else {
+                        if(schedule.new) {
+                            ScheduleService.remove(schedule.parent);
+                        }
+                    }
                 };
                 
                 $scope.update = function(schedule) {
+                    
                     if(schedule.id) {
+                        var parent = schedule.parent;
+                        schedule.parent = null;
                         ScheduleService.patch(schedule, function(){
                             $scope.toggle(schedule);
+                            ScheduleService.replace(parent, schedule);
+                            schedule.enabled = false;
                         });
                     }
+                    
                     else {
+                        var parent = schedule.parent;
+                        schedule.parent = null;
                         ScheduleService.put(schedule, function(){
-                            $scope.toggle(schedule);
+                            schedule.new = false;
+                            ScheduleService.replace(parent, schedule);
+                            schedule.enabled = false;
                         });
                     }
                 };
                 
                 $scope.create = function() {
                     ScheduleService.createNew();
-                    $scope.schedules[0].enabled = true;
+                    $scope.schedules[0]['new'] = true;
+                    $scope.toggle($scope.schedules[0]);
                 };
                 
                 $scope.delete = function(schedule) {
-                    ScheduleService.delete(schedule);
+                    ScheduleService.delete(schedule, function() {
+                        ScheduleService.remove(schedule);
+                        $scope.schedules = ScheduleService.schedules;
+                    });
                 };
                 
                 $scope.play = function(schedule) {
@@ -46,6 +71,10 @@ define([], function() {
                 $scope.stop = function(schedule) {
                     schedule.method = "stop";
                     ScheduleService.post(schedule);
+                };
+                
+                var clone = function(object) {
+                    return JSON.parse(JSON.stringify(object));
                 };
                 
                 var setData = function() {
@@ -68,9 +97,9 @@ define([], function() {
                 updateData();
             })
 
-            .directive("schedules", function() {
+            .directive("schedulesForm", function() {
               return {
-                templateUrl: 'html/active-schedules.html'
+                templateUrl: 'html/schedules-form.html'
               };
             })
             
@@ -84,6 +113,24 @@ define([], function() {
         
                 this.createNew = function() {
                     this.schedules.unshift({});
+                }
+                
+                this.remove = function(schedule) {
+                    for(var s in this.schedules) {
+                        if (this.schedules[s] === schedule) {
+                            this.schedules.splice(s, 1);
+                            break;
+                        }
+                    }
+                }
+                
+                this.replace = function(oldSchedule, newSchedule) {
+                    for(var s in this.schedules) {
+                        if (this.schedules[s] === oldSchedule) {
+                            this.schedules[s] = newSchedule;
+                            break;
+                        }
+                    }
                 }
         
                 this.get = function(success, error) {
@@ -157,7 +204,7 @@ define([], function() {
                     $http.put('api/schedule', schedule).then(
                             
                         function(response) {
-                            // todo: update id with the returned value
+                            schedule["id"] = response["data"]["id"];
                             success && success(response);
                         }, 
 

@@ -12,122 +12,15 @@
             <button type="button" class="btn btn-primary x_panel" ng-click="create()">
                 Create
             </button>
-            <div class="x_panel" ng-repeat="schedule in schedules">
+            <div class="x_panel" ng-repeat="s in schedules">
                 <div class="x_content">
+                  {{schedule=s.enabled ? s.clone : s;""}}
                   <article class="media event">
-                    <div class="media-body">
-                        <form>
-                            <div class="row form-group">
-                                <div class="col-lg-12 col-md-12 col-sm-12 col-sx-12">
-                                    <div class="row">
-                                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                                            <div class="form-group">
-                                              <label>Name</label>
-                                              <input class="form-control" ng-model="schedule.name"
-                                                     ng-disabled="!schedule.enabled">
-                                            </div>
-                                        </div>
-
-                                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                                            <div class="form-group">
-                                              <label>RPi</label>
-                                                <ui-select ng-model="schedule.rpi" ng-disabled="!schedule.enabled">
-                                                  <ui-select-match>
-                                                      <span ng-bind="$select.selected.id"></span>
-                                                  </ui-select-match>
-                                                  <ui-select-choices repeat="r in (rpis | filter: $select.search)">
-                                                      <span ng-bind="r.id"></span>
-                                                  </ui-select-choices>
-                                                </ui-select>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="row">
-                                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
-                                            <div class="form-group">
-                                              <label>Zone</label>
-                                                <ui-select ng-model="schedule.zone" ng-disabled="!schedule.enabled">
-                                                  <ui-select-match>
-                                                      <span ng-bind="$select.selected"></span>
-                                                  </ui-select-match>
-                                                  <ui-select-choices repeat="z in (zones | filter: $select.search)">
-                                                      <span ng-bind="z"></span>
-                                                  </ui-select-choices>
-                                                </ui-select>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
-                                            <div class="form-group">
-                                              <label>Start</label>
-                                              <input class="form-control"  ng-model="schedule.start"
-                                                     ng-disabled="!schedule.enabled">
-                                            </div>
-                                        </div>
-
-                                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
-                                            <div class="form-group">
-                                              <label>Duration</label>
-                                              <input class="form-control" ng-model="schedule.duration"
-                                                     ng-disabled="!schedule.enabled">
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="row">
-                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                            <div class="form-group">
-                                              <label>Day of Week</label>
-                                                <ui-select multiple ng-model="schedule.dow" theme="bootstrap" close-on-select="false" ng-disabled="!schedule.enabled">
-                                                  <ui-select-match>{{$item}}</ui-select-match>
-                                                  <ui-select-choices repeat="d in dows | filter:$select.search">
-                                                    {{d}}
-                                                  </ui-select-choices>
-                                                </ui-select>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="row">
-                                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 action">
-                                          <a ng-click="stop(schedule)" ng-show="!schedule.enabled" href>
-                                            <i class="fa fa-stop-circle-o" aria-hidden="true" style="font-size:35px;"></i>
-                                          </a>
-                                        </div>
-
-                                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 action">
-                                          <a ng-click="play(schedule)" ng-show="!schedule.enabled" href>
-                                            <i class="fa fa-play-circle-o" aria-hidden="true" style="font-size:35px;"></i>
-                                          </a>
-                                        </div>
-
-                                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 action">
-                                            <a ng-click="toggle(schedule)" ng-show="!schedule.enabled" href>
-                                                <i class="fa fa-wrench" aria-hidden="true" style="font-size:35px;"></i>
-                                            </a>
-                                            <a ng-click="toggle(schedule)" ng-show="schedule.enabled" href>
-                                                <i class="fa fa-times" aria-hidden="true" style="font-size:35px;"></i>
-                                            </a>
-                                        </div>
-
-                                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 action">
-                                            
-                                          <a ng-click="delete(schedule)" ng-show="!schedule.enabled" href>
-                                            <i class="fa fa-trash-o" aria-hidden="true" style="font-size:35px;"></i>
-                                          </a>
-                                          <a ng-click="update(schedule)" ng-show="schedule.enabled" href>
-                                            <i class="fa fa-check" aria-hidden="true" style="font-size:35px;"></i>
-                                          </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
+                    <div class="media-body" ng-show="!s.enabled" schedules-form></div>
+                    <div class="media-body" ng-show="s.enabled" schedules-form></div>
                   </article>
                 </div>
-              </div>
+            </div>
         </div>
     </div>
   </div>

@@ -236,7 +236,7 @@ class Schedule extends Service {
                 "add"
             );
 
-            $this->m_mData = $rpiRequest['id'];
+            $this->m_mData = array("id" => $rpiRequest['id']);
         }
         
         return $success;
