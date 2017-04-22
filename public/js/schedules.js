@@ -13,8 +13,21 @@ define([], function() {
                     $scope.rpis = RPiService.rpis;
                 };
                 
+                $scope.toggle = function(schedule) {
+                    schedule.enabled = !schedule.enabled;
+                };
+                
                 $scope.update = function(schedule) {
-                    ScheduleService.put(schedule);
+                    if(schedule.id) {
+                        ScheduleService.patch(schedule, function(){
+                            $scope.toggle(schedule);
+                        });
+                    }
+                    else {
+                        ScheduleService.put(schedule, function(){
+                            $scope.toggle(schedule);
+                        });
+                    }
                 };
                 
                 $scope.create = function() {
@@ -27,6 +40,7 @@ define([], function() {
                 };
                 
                 $scope.play = function(schedule) {
+                    schedule.method = "play";
                     ScheduleService.post(schedule);
                 };
                 
@@ -35,6 +49,7 @@ define([], function() {
                 };
                 
                 $scope.stop = function(schedule) {
+                    schedule.method = "stop";
                     ScheduleService.post(schedule);
                 };
                 
@@ -80,10 +95,10 @@ define([], function() {
                     );
                 };
                 
-                this.post = function(entry, success, error) {
+                this.post = function(schedule, success, error) {
                     
                     var $this = this;
-                    $http.post('api/schedule').then(
+                    $http.post('api/schedule', schedule).then(
                             
                         function(response) {
                             success && success(response);
@@ -95,10 +110,10 @@ define([], function() {
                     );
                 };
                 
-                this.delete = function(entry, success, error) {
+                this.delete = function(schedule, success, error) {
                     
                     var $this = this;
-                    $http.delete('api/schedule').then(
+                    $http.delete('api/schedule', {data: schedule}).then(
                             
                         function(response) {
                             success && success(response);
@@ -110,10 +125,10 @@ define([], function() {
                     );
                 };
                 
-                this.patch = function(entry, success, error) {
+                this.patch = function(schedule, success, error) {
                     
                     var $this = this;
-                    $http.patch('api/schedule').then(
+                    $http.patch('api/schedule', schedule).then(
                             
                         function(response) {
                             success && success(response);
@@ -131,6 +146,7 @@ define([], function() {
                     $http.put('api/schedule', schedule).then(
                             
                         function(response) {
+                            // todo: update id with the returned value
                             success && success(response);
                         }, 
 
