@@ -4,14 +4,9 @@ define([], function() {
             app.controller("ScheduleCtrl", function ($scope, ScheduleService, RPiService, User) {
 
                 $scope.schedules = ScheduleService.schedules;
+                $scope.zones = [1, 2, 3, 4];
                 $scope.rpis = RPiService.rpis;
                 $scope.dows = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
-                $scope.zones = [1, 2, 3, 4];
-                
-                var update = function() {
-                    $scope.schedules = ScheduleService.schedules;
-                    $scope.rpis = RPiService.rpis;
-                };
                 
                 $scope.toggle = function(schedule) {
                     schedule.enabled = !schedule.enabled;
@@ -53,12 +48,24 @@ define([], function() {
                     ScheduleService.post(schedule);
                 };
                 
-                if(User.loggedIn) {
-                    ScheduleService.get(update);
-                    RPiService.get(update);
-                }
+                var setData = function() {
+                    $scope.schedules = ScheduleService.schedules;
+                    $scope.rpis = RPiService.rpis;
+                };
                 
-                angular.element(document).ready(update);
+                var updateData = function() {
+                    if(User.loggedIn) {
+                        ScheduleService.get(setData);
+                        RPiService.get(setData);
+                    }
+                    else {
+                        ScheduleService.clear();
+                    }
+                };
+
+                $scope.$on('user:loggedout', updateData);
+                $scope.$on('user:authorized', updateData);
+                updateData();
             })
 
             .directive("schedules", function() {
@@ -70,6 +77,10 @@ define([], function() {
             .service('ScheduleService', ['$http', function($http) {
                     
                 this.schedules = [];
+        
+                this.clear = function() {
+                    this.schedules.splice(0, this.schedules.length);
+                }
         
                 this.createNew = function() {
                     this.schedules.unshift({});

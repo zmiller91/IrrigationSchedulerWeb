@@ -22,6 +22,9 @@ class Schedule extends Service {
         // User must be logged in
         $this->m_oUser->authorize();
         $success = $this->m_oUser->m_bLoggedIn;
+        if(!$success) {
+            $this->setStatusCode(401);
+        }
         
         // If user is requesting to access an RPi resource, then it must be theirs
         if($success &&  isset($this->m_aInput['rpi'])) {
