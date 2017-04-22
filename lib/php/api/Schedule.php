@@ -18,41 +18,72 @@ class Schedule extends Service {
     }
 
     protected function authorize() {
+        
+        // User must be logged in
         $this->m_oUser->authorize();
-        return $this->m_oUser->m_bLoggedIn;
+        $success = $this->m_oUser->m_bLoggedIn;
+        
+        // If user is requesting to access an RPi resource, then it must be theirs
+        if($success &&  isset($this->m_aInput['rpi'])) {
+            $RPiTable = new RPiTable($this->m_oConnection);
+            $result = $RPiTable->select($this->m_oUser->m_iUserId, $this->m_aInput['rpi']['id']);
+            
+            // Any errors block access
+            if($RPiTable->hasErrors()) {
+                $this->m_oError->addAll($RPiTable->getErrors());
+                $success = false;
+            }
+            
+            // Empty result means 403
+            elseif(empty($result)) {
+                $this->setStatusCode(403);
+                $success = false;
+            }
+        }
+        
+        // If user is requesting to access a schedule resource, then it must be theirs
+        if($success &&  isset($this->m_aInput['id'])) {
+            $ScheduleTable = new ScheduleTable($this->m_oConnection);
+            $result = $ScheduleTable->select($this->m_oUser->m_iUserId, null, $this->m_aInput['id']);
+            
+            // Any errors block access
+            if($ScheduleTable->hasErrors()) {
+                $this->m_oError->addAll($ScheduleTable->getErrors());
+                $success = false;
+            }
+            
+            // Empty result means 403
+            elseif(empty($result)) {
+                $this->setStatusCode(403);
+                $success = false;
+            }
+        }
+        
+        return $success;
     }
 
     protected function validate() {
-        $requiredPaths = array();
-        switch($this->m_strMethod) {
-            
-            case self::PUT:
-                $requiredPaths = array('/rpi', '/zone', '/name', '/start', '/duration', '/dow');
-                break;
-            
-            case self::DELETE:
-                $requiredPaths = array('/id');
-                break;
-            
-            case self::PATCH:
-                $requiredPaths = array('/id', '/rpi', '/zone', '/name', '/start', '/duration', '/dow');
-                break;
-            
-            case self::POST:
-                $requiredPaths = array('/id', '/rpi', '/zone', '/start', '/duration', '/dow');
-                break;
-        }
         
-        $validPaths = $this->validatePaths($this->m_aInput, $requiredPaths);
+        $requiredPaths = array(
+            self::GET => array(),
+            self::DELETE => array('/id'),
+            self::PUT => array('/rpi', '/zone', '/name', '/start', '/duration', '/dow'),
+            self::PATCH => array('/id', '/rpi', '/zone', '/name', '/start', '/duration', '/dow'),
+            self::POST => array('/method', '/id', '/rpi', '/zone', '/start', '/duration', '/dow')
+        );
+        
+        $validPaths = $this->validatePaths($this->m_aInput, $requiredPaths[$this->m_strMethod]);
         $validContent = $this->validateScheduleFields($this->m_aInput);
         return $validPaths && $validContent;
     }
     
     protected function post() {
         
+        // Post message to RabbitMQ
         $this->sendToRPI(
-            $this->m_aInput['rpi']['id'], 
-            $this->m_aInput
+                $this->m_aInput['rpi']['id'], 
+                $this->m_aInput, 
+                $this->m_aInput['method']
         );
         
         return true;
@@ -63,29 +94,42 @@ class Schedule extends Service {
         $success = true;
         $ScheduleTable = new ScheduleTable($this->m_oConnection);
         
-        $ScheduleTable->update(
-            $this->m_oUser->m_iUserId,
-            $this->m_aInput['id'],
-            $this->m_aInput['rpi']['id'],
-            $this->m_aInput['name'], 
-            $this->m_aInput['zone'], 
-            $this->m_aInput['start'], 
-            $this->m_aInput['duration'], 
-            implode(',', $this->m_aInput['dow'])
-        );
-        
+        // Get the old schedule
+        $oldSchedule = $ScheduleTable->select(null, null, $this->m_aInput['id']);
         if($ScheduleTable->hasErrors()) {
             $this->m_oError->addAll($ScheduleTable->getErrors());
             $success = false;
         }
         
         if($success) {
-            $rpiRequest = $this->m_aInput;
-            $rpiRequest['method'] = 'patch';
-            $this->sendToRPI(
-                $this->m_aInput['rpi']['id'], 
-                $rpiRequest
+            
+            // If the RPi ID changed tell old RPi to delete schedule
+            if(isset($oldSchedule[0]) && $oldSchedule[0]['rpi_id'] != $this->m_aInput['rpi']['id']) {
+                $this->sendToRPI($oldSchedule[0]['rpi_id'], $this->m_aInput, 'delete');
+            }
+            
+            // Update the database
+            $ScheduleTable->update(
+                $this->m_oUser->m_iUserId,
+                $this->m_aInput['id'],
+                $this->m_aInput['rpi']['id'],
+                $this->m_aInput['name'], 
+                $this->m_aInput['zone'], 
+                $this->m_aInput['start'], 
+                $this->m_aInput['duration'], 
+                implode(',', $this->m_aInput['dow'])
             );
+
+            // Log any errors
+            if($ScheduleTable->hasErrors()) {
+                $this->m_oError->addAll($ScheduleTable->getErrors());
+                $success = false;
+            }
+
+            // Notify RPi
+            if($success) {
+                $this->sendToRPI($this->m_aInput['rpi']['id'], $this->m_aInput, 'update');
+            }
         }
         
         return $success;
@@ -95,6 +139,8 @@ class Schedule extends Service {
         
         $success = true;
         $ScheduleTable = new ScheduleTable($this->m_oConnection);
+        
+        // Update the database
         if(!empty($this->m_aInput['id'])) {
             $ScheduleTable->delete(
                 $this->m_oUser->m_iUserId,
@@ -103,17 +149,18 @@ class Schedule extends Service {
             );
         }
         
+        // Log any errors
         if($ScheduleTable->hasErrors()) {
             $this->m_oError->addAll($ScheduleTable->getErrors());
             $success = false;
         }
         
+        // Notify the RPi
         if($success) {
-            $rpiRequest = $this->m_aInput;
-            $rpiRequest['method'] = 'delete';
             $this->sendToRPI(
                 $this->m_aInput['rpi']['id'], 
-                $rpiRequest
+                $this->m_aInput,
+                'delete'
             );
         }
         
@@ -125,15 +172,19 @@ class Schedule extends Service {
         $success = true;
         $RPiTable = new RPiTable($this->m_oConnection);
         $ScheduleTable = new ScheduleTable($this->m_oConnection);
+        
+        // Get users schedules and rpis
         $schedules = $ScheduleTable->select($this->m_oUser->m_iUserId);
         $rpi = $RPiTable->select($this->m_oUser->m_iUserId);
         
+        // Log errors
         if($RPiTable->hasErrors() || $ScheduleTable->hasErrors()) {
             $this->m_oError->addAll($RPiTable->getErrors());
             $this->m_oError->addAll($ScheduleTable->getErrors());
             $success = false;
         }
         
+        // Map to output
         if($success) {
             $rpiMap = $RPiTable->map($rpi, array('id'));
             foreach($schedules as &$schedule) {
@@ -153,52 +204,42 @@ class Schedule extends Service {
         $RPiTable = new RPiTable($this->m_oConnection);
         $ScheduleTable = new ScheduleTable($this->m_oConnection);
         
-        // Check if user and rpi exist
+        // Get rpi information and insert schedule
         $rpi = $RPiTable->select($this->m_oUser->m_iUserId, $this->m_aInput['rpi']['id']);
-        $success = !$RPiTable->hasErrors();
-        if($success && !empty($rpi)) {
-            
-            // Insert into table
-            $ScheduleTable->insert(
-                    $this->m_oUser->m_iUserId,
-                    $this->m_aInput['rpi']['id'],
-                    $this->m_aInput['name'], 
-                    $this->m_aInput['zone'], 
-                    $this->m_aInput['start'], 
-                    $this->m_aInput['duration'], 
-                    implode(',', $this->m_aInput['dow'])
-                );
-            
-            // Set errors if they exist
-            $success = !$ScheduleTable->hasErrors();
-            if(!$success) {
-                $this->m_oError->addAll($ScheduleTable->getErrors());
-            }
-            
-            // Return the ID
-            else {
-        
-                $rpiRequest = $this->m_aInput;
-                $rpiRequest['method'] = 'delete';
-                $rpiRequest['id'] = $ScheduleTable->selectLastInsertID();
-                $this->sendToRPI(
-                    $this->m_aInput['rpi']['id'], 
-                    $rpiRequest
-                );
-                
-                $this->m_mData = $rpiRequest['id'];
-            }
-        }
-        
-        // Set errors if they exist
-        else {
+        $ScheduleTable->insert(
+                $this->m_oUser->m_iUserId,
+                $this->m_aInput['rpi']['id'],
+                $this->m_aInput['name'], 
+                $this->m_aInput['zone'], 
+                $this->m_aInput['start'], 
+                $this->m_aInput['duration'], 
+                implode(',', $this->m_aInput['dow'])
+            );
+
+        // Log errors
+        if($RPiTable->hasErrors() || $ScheduleTable->hasErrors()) {
             $this->m_oError->addAll($RPiTable->getErrors());
+            $this->m_oError->addAll($ScheduleTable->getErrors());
+            $success = false;
+        }
+
+        // Notify RPi and output new schedule id
+        if($success) {
+            $rpiRequest = $this->m_aInput;
+            $rpiRequest['id'] = $ScheduleTable->selectLastInsertID();
+            $this->sendToRPI(
+                $this->m_aInput['rpi']['id'], 
+                $rpiRequest,
+                "add"
+            );
+
+            $this->m_mData = $rpiRequest['id'];
         }
         
         return $success;
     }
     
-    private function sendToRPI($channel, $schedule) {
+    private function sendToRPI($channel, $schedule, $method) {
         
         $duration = split(":", $schedule['duration']);
         $duration = array(
@@ -206,13 +247,14 @@ class Schedule extends Service {
             "minutes" => $duration[1]
         );
         
-        $time = split(":", $schedule['start']);
+        $time = split(":", date("H:i", strtotime($schedule['start'])));
         $time = array(
             "hours" => $time[0],
             "minutes" => $time[1]
         );
         
         $request = array(
+            'method' => $method,
             'id' => $schedule['id'],
             'days' => $schedule['dow'],
             'time' => $time,
@@ -319,6 +361,23 @@ class Schedule extends Service {
             
             if(!$validDow) {
                 $this->m_oError->add("`/dow` must be a non-empty csv containing the values (SUN, MON, TUE, WED, THUR, FRI, SAT).");
+                $valid = false;
+            }
+        }
+        
+        // dows must be a csv in and contain only [SUN, MON, TUE, WED, THU, FRI, SAT]
+        if(isset($schedule['method'])) {
+            $validMethod = true;
+            if(!is_string($schedule['method']) || empty($schedule['method'])) {
+                $validMethod = false;
+            }
+            else {
+                $validMethods = array('stop', 'play');
+                $validMethod = in_array($schedule['method'], $validMethods);
+            }
+            
+            if(!$validMethod) {
+                $this->m_oError->add("`/method` must be either 'play' or 'stop'.");
                 $valid = false;
             }
         }
