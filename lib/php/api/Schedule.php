@@ -262,7 +262,7 @@ class Schedule extends Service {
             'days' => $schedule['dow'],
             'time' => $time,
             'duration' => $duration,
-            'duration' => $schedule['zone']
+            'zone' => $schedule['zone']
         );
         
         
