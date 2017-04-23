@@ -267,7 +267,7 @@ class Schedule extends Service {
         
         $args = $channel . ' "' . addslashes(json_encode($request)) . '"';
         $cmd = implode(" ", array(PYTHON, RMQSEND, $args));
-        $command = escapeshellcmd($cmd);
+        $command = exec($cmd);
         $output = shell_exec($command);
         $this->m_mData = $output;
         return $output;
