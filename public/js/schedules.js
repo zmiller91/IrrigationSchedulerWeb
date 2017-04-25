@@ -110,15 +110,10 @@ define([], function() {
                 };
 
                 $scope.$on('user:loggedout', logout);
-                if(!User.loggedIn) {
-                    User.authorizeCookie(function(user) {
-                        user.loggedIn && getData();
-                        !user.loggedIn && goToLogin();
-                    }, goToLogin);
-                }
-                else {
-                    getData();
-                }
+                User.authorizeCookie(function(user) {
+                    user.loggedIn && getData();
+                    !user.loggedIn && goToLogin();
+                }, goToLogin);
             })
 
             .directive("schedulesForm", function() {
