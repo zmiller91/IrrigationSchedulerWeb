@@ -3,6 +3,7 @@ define([], function() {
         init: function(app) {
             app.controller("ScheduleCtrl", function ($scope, $location, ScheduleService, RPiService, User) {
 
+                $scope.loading = "";
                 $scope.schedules = ScheduleService.schedules;
                 $scope.zones = [1, 2, 3, 4];
                 $scope.rpis = RPiService.rpis;
@@ -24,19 +25,22 @@ define([], function() {
                 };
                 
                 $scope.update = function(schedule) {
+                    $scope.loading = "update";
                     if(schedule.new) {
                         ScheduleService.put(schedule, function(){
                             schedule.clone = null;
                             schedule.enabled = false;
                             schedule.new = false;
-                        });
+                            stopLoading();
+                        }, stopLoading);
                     }
                     else {
                         ScheduleService.patch(schedule, function(){
                             schedule.clone = null;
                             schedule.enabled = false;
                             schedule.new = false;
-                        });
+                            stopLoading();
+                        }, stopLoading);
                     }
                 };
                 
@@ -47,25 +51,34 @@ define([], function() {
                 };
                 
                 $scope.delete = function(schedule) {
+                    $scope.loading = "delete";
                     ScheduleService.delete(schedule, function() {
                         ScheduleService.remove(schedule);
                         $scope.schedules = ScheduleService.schedules;
-                    });
+                        stopLoading();
+                    }, stopLoading);
                 };
                 
                 $scope.play = function(schedule) {
+                    $scope.loading = "play";
                     schedule.method = "play";
-                    ScheduleService.post(schedule);
+                    ScheduleService.post(schedule, stopLoading, stopLoading);
                 };
                 
                 $scope.pause = function(schedule) {
-                    ScheduleService.patch(schedule);
+                    $scope.loading = "pause"
+                    ScheduleService.patch(schedule, stopLoading, stopLoading);
                 };
                 
                 $scope.stop = function(schedule) {
+                    $scope.loading = "stop";
                     schedule.method = "stop";
-                    ScheduleService.post(schedule);
+                    ScheduleService.post(schedule, stopLoading, stopLoading);
                 };
+                
+                var stopLoading = function() {
+                    $scope.loading = "";
+                }
                 
                 var clone = function(object) {
                     return JSON.parse(JSON.stringify(object));

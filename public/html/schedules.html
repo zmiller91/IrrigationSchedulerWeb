@@ -89,36 +89,47 @@
                                         </div>
                                     </div>
 
-                                    <div class="row">
+                                    <div id="schedule-actions" class="row">
+                                        
                                         <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 action">
-                                          <a ng-click="stop(schedule)" ng-show="!schedule.enabled" href>
-                                            <i class="fa fa-stop-circle-o" aria-hidden="true" style="font-size:35px;"></i>
-                                          </a>
+                                            <div ng-show="!schedule.enabled">
+                                                <i class="fa fa-refresh fa-spin fa-3x fa-fw" ng-show="loading === 'stop'"></i>
+                                                <a ng-click="stop(schedule)" ng-show="loading !== 'stop'" href>
+                                                  <i class="fa fa-stop-circle-o" aria-hidden="true"></i>
+                                                </a>
+                                            </div>
                                         </div>
 
                                         <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 action">
-                                          <a ng-click="play(schedule)" ng-show="!schedule.enabled" href>
-                                            <i class="fa fa-play-circle-o" aria-hidden="true" style="font-size:35px;"></i>
-                                          </a>
+                                            <div ng-show="!schedule.enabled">
+                                                <i class="fa fa-refresh fa-spin fa-3x fa-fw" ng-show="loading === 'play'"></i>
+                                                <a ng-click="play(schedule)" ng-show="loading !== 'play'" href>
+                                                  <i class="fa fa-play-circle-o" aria-hidden="true"></i>
+                                                </a>
+                                            </div>
                                         </div>
 
                                         <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 action">
                                             <a ng-click="edit(schedule)" ng-show="!schedule.enabled" href>
-                                                <i class="fa fa-wrench" aria-hidden="true" style="font-size:35px;"></i>
+                                                <i class="fa fa-wrench" aria-hidden="true"></i>
                                             </a>
                                             <a ng-click="cancel(schedule)" ng-show="schedule.enabled" href>
-                                                <i class="fa fa-times" aria-hidden="true" style="font-size:35px;"></i>
+                                                <i class="fa fa-times" aria-hidden="true"></i>
                                             </a>
                                         </div>
 
                                         <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 action">
+                                            
+                                            <i class="fa fa-refresh fa-spin fa-3x fa-fw" ng-show="loading === 'delete' || loading === 'update'"></i>
+                                            <div ng-show="loading !== 'delete' && loading !== 'update'" >
+                                                <a ng-click="delete(schedule)" ng-show="!schedule.enabled" href>
+                                                  <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                                </a>
 
-                                          <a ng-click="delete(schedule)" ng-show="!schedule.enabled" href>
-                                            <i class="fa fa-trash-o" aria-hidden="true" style="font-size:35px;"></i>
-                                          </a>
-                                          <a ng-click="update(schedule)" ng-show="schedule.enabled" href>
-                                            <i class="fa fa-check" aria-hidden="true" style="font-size:35px;"></i>
-                                          </a>
+                                                <a ng-click="update(schedule)" ng-show="schedule.enabled" href>
+                                                  <i class="fa fa-check" aria-hidden="true"></i>
+                                                </a>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

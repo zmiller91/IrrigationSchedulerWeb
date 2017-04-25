@@ -78,3 +78,7 @@ input[disabled] {
     box-shadow: none !important;
     opacity: .65 !important;
 }
+
+#schedule-actions i {
+    font-size:35px;
+}
