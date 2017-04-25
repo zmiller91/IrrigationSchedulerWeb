@@ -8,19 +8,14 @@ define([], function() {
                 $scope.rpis = RPiService.rpis;
                 $scope.dows = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
                 
-                $scope.toggle = function(schedule) {
-                    schedule.enabled = !schedule.enabled;
-                    if(schedule.enabled) {
-                        schedule.parent = null;
-                        schedule.clone = null;
-                        schedule.clone = clone(schedule);
-                        schedule.clone.parent = schedule;
-                    }
-                    else {
-                        if(schedule.new) {
-                            ScheduleService.remove(schedule.parent);
-                        }
-                    }
+                $scope.edit = function(schedule) {
+                    schedule.enabled = true;
+                    schedule.clone = clone(schedule);
+                };
+                
+                $scope.cancel = function(schedule) {
+                    ScheduleService.replace(schedule, schedule.clone)
+                    schedule.enabled = false;
                 };
                 
                 $scope.update = function(schedule) {
@@ -29,7 +24,6 @@ define([], function() {
                         var parent = schedule.parent;
                         schedule.parent = null;
                         ScheduleService.patch(schedule, function(){
-                            $scope.toggle(schedule);
                             ScheduleService.replace(parent, schedule);
                             schedule.enabled = false;
                         });
@@ -49,7 +43,7 @@ define([], function() {
                 $scope.create = function() {
                     ScheduleService.createNew();
                     $scope.schedules[0]['new'] = true;
-                    $scope.toggle($scope.schedules[0]);
+                    $scope.edit($scope.schedules[0]);
                 };
                 
                 $scope.delete = function(schedule) {
@@ -125,11 +119,8 @@ define([], function() {
                 }
                 
                 this.replace = function(oldSchedule, newSchedule) {
-                    for(var s in this.schedules) {
-                        if (this.schedules[s] === oldSchedule) {
-                            this.schedules[s] = newSchedule;
-                            break;
-                        }
+                    for(var k in oldSchedule) {
+                        oldSchedule[k] = newSchedule[k];
                     }
                 }
         
