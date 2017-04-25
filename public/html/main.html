@@ -37,49 +37,61 @@
     
   </head>
 
-  <body class="nav-md">
+  <body ng-controller="NavigationCtrl" ng-class="getNavClass()">
     <div class="container body">
       <div class="main_container">
-        <div class="col-md-3 left_col">
-          <div class="left_col scroll-view">
-            <div class="navbar nav_title" style="border: 0;">
-              <a href="index.html" class="site_title"><i class="fa fa-leaf"></i> <span>LAWN CRON</span></a>
+          <div>
+            <div class="col-md-3 left_col">
+              <div class="left_col scroll-view">
+                <div class="navbar nav_title" style="border: 0;">
+                  <a href="index.html" class="site_title"><i class="fa fa-leaf"></i> <span>LAWN CRON</span></a>
+                </div>
+
+                <div class="clearfix"></div>
+
+                <!-- sidebar menu -->
+                <div id="sidebar-menu" class="main_menu_side hidden-print main_menu" ng-controller="UserCtrl">
+                  <div class="menu_section">
+                    <h3>General</h3>
+                    <ul class="nav side-menu">
+                      <li ng-show="user.loggedIn" ng-class="getTabClass('/schedules')">
+                          <a href="/schedules"><i class="fa fa-calendar"></i>Schedules </a>
+                      </li>
+                      <li ng-show="user.loggedIn" ng-class="getTabClass('/rpis')">
+                          <a href="/rpis"><i class="fa icon-raspberrypi"></i>Raspberry Pis</a>
+                      </li>
+                      <li ng-show="!user.loggedIn" ng-class="getTabClass('/login')">
+                          <a href="/login"><i class="fa fa-sign-in"></i>Login </a>
+                      </li>
+                      <li ng-show="!user.loggedIn">
+                          <a href="/register"><i class="fa fa-user-plus"></i>Register </a>
+                      </li>
+                      <li ng-show="user.loggedIn" ng-class="getTabClass('/logout')">
+                          <a ng-click="navLogout()"><i class="fa fa-sign-out"></i>Logout </a>
+                      </li>
+                    </ul>
+                  </div>
+
+                </div>
+                <!-- /sidebar menu -->
+              </div>
             </div>
 
-            <div class="clearfix"></div>
+            <!-- top navigation -->
+            <div class="top_nav">
+              <div class="nav_menu">
+                <nav>
+                  <div class="nav toggle">
+                    <a id="menu_toggle" ng-click="toggleCollapse()"><i class="fa fa-bars"></i></a>
+                  </div>
 
-            <!-- sidebar menu -->
-            <div id="sidebar-menu" class="main_menu_side hidden-print main_menu" ng-controller="UserCtrl">
-              <div class="menu_section">
-                <h3>General</h3>
-                <ul class="nav side-menu">
-                  <li ng-show="user.loggedIn"><a href="/schedules"><i class="fa fa-calendar"></i>Schedules </a></li>
-                  <li ng-show="user.loggedIn"><a href="/rpis"><i class="fa icon-raspberrypi"></i>Raspberry Pis</a></li>
-                  <li ng-show="!user.loggedIn"><a href="/login"><i class="fa fa-sign-in"></i>Login </a></li>
-                  <li ng-show="!user.loggedIn"><a href="/register"><i class="fa fa-user-plus"></i>Register </a></li>
-                  <li ng-show="user.loggedIn"><a ng-click="logout()"><i class="fa fa-sign-out"></i>Logout </a></li>
-                </ul>
+                  <ul class="nav navbar-nav navbar-right">
+                  </ul>
+                </nav>
               </div>
-
             </div>
-            <!-- /sidebar menu -->
+            <!-- /top navigation -->
           </div>
-        </div>
-
-        <!-- top navigation -->
-        <div class="top_nav">
-          <div class="nav_menu">
-            <nav>
-              <div class="nav toggle">
-                <a id="menu_toggle"><i class="fa fa-bars"></i></a>
-              </div>
-
-              <ul class="nav navbar-nav navbar-right">
-              </ul>
-            </nav>
-          </div>
-        </div>
-        <!-- /top navigation -->
 
         <!-- page content -->
         <ng-view></ng-view>

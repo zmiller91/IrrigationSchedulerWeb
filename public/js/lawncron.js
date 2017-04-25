@@ -4,11 +4,11 @@ define([
     'login',
     'registration',
     'routes',
-    'lib/js-common/user/user',
-    'lib/custom.min'
+    'navigation',
+    'lib/js-common/user/user'
 ],
 
-  function(schedules, rpi, login, registration, routes, user){
+  function(schedules, rpi, login, registration, routes, navigation, user){
       
     // Create the base module for the page
     var lc = angular.module('irrigation-schedule', ['ui.bootstrap', 'ngRoute', 'ui.select']);
@@ -21,6 +21,7 @@ define([
     rpi.init(lc);
     login.init(lc);
     registration.init(lc);
+    navigation.init(lc);
     
     // Bootstrap the page
     angular.bootstrap(document, ['irrigation-schedule']);
