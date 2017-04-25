@@ -25,7 +25,7 @@ define([], function() {
                     })
 
                     .otherwise({
-                        redirectTo: '/schedules'
+                        redirectTo: '/login'
                     });
 
                 $locationProvider.html5Mode(true);

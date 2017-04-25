@@ -1,7 +1,7 @@
 define([], function() {
     return {
         init: function(app) {
-            app.controller("RPiCtrl", function ($scope, RPiService) {
+            app.controller("RPiCtrl", function ($scope, $location, RPiService, User) {
 
                 $scope.rpis = RPiService.rpis;
 
@@ -12,15 +12,31 @@ define([], function() {
                 $scope.remove = function (id) {
                     RPiService.delete(id, update);
                 };
-
-                $scope.cancel = function () {
-                };
                 
                 var update = function() {
                     $scope.rpis = RPiService.rpis;
                 };
                 
-                RPiService.get(update);
+                var logout = function() {
+                    $scope.rpis = [];
+                    goToLogin();
+                };
+                
+                var goToLogin = function() {
+                    $location.path('/login');
+                };
+                
+                var getData = function() {
+                    RPiService.get(update);
+                };
+                
+                $scope.$on('user:loggedout', logout);
+                if(!User.loggedIn) {
+                    User.authorizeCookie(function(user) {
+                        user.loggedIn && getData();
+                        !user.loggedIn && goToLogin();
+                    }, goToLogin);
+                }
             })
             
             .service('RPiService', ['$http', function($http) {

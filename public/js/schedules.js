@@ -1,7 +1,7 @@
 define([], function() {
     return {
         init: function(app) {
-            app.controller("ScheduleCtrl", function ($scope, ScheduleService, RPiService, User) {
+            app.controller("ScheduleCtrl", function ($scope, $location, ScheduleService, RPiService, User) {
 
                 $scope.schedules = ScheduleService.schedules;
                 $scope.zones = [1, 2, 3, 4];
@@ -14,28 +14,28 @@ define([], function() {
                 };
                 
                 $scope.cancel = function(schedule) {
-                    ScheduleService.replace(schedule, schedule.clone)
-                    schedule.enabled = false;
+                    if(schedule.new) {
+                        ScheduleService.remove(schedule);
+                    }
+                    else {
+                        ScheduleService.replace(schedule, schedule.clone)
+                        schedule.enabled = false;
+                    }
                 };
                 
                 $scope.update = function(schedule) {
-                    
-                    if(schedule.id) {
-                        var parent = schedule.parent;
-                        schedule.parent = null;
-                        ScheduleService.patch(schedule, function(){
-                            ScheduleService.replace(parent, schedule);
+                    if(schedule.new) {
+                        ScheduleService.put(schedule, function(){
+                            schedule.clone = null;
                             schedule.enabled = false;
+                            schedule.new = false;
                         });
                     }
-                    
                     else {
-                        var parent = schedule.parent;
-                        schedule.parent = null;
-                        ScheduleService.put(schedule, function(){
-                            schedule.new = false;
-                            ScheduleService.replace(parent, schedule);
+                        ScheduleService.patch(schedule, function(){
+                            schedule.clone = null;
                             schedule.enabled = false;
+                            schedule.new = false;
                         });
                     }
                 };
@@ -76,19 +76,36 @@ define([], function() {
                     $scope.rpis = RPiService.rpis;
                 };
                 
-                var updateData = function() {
-                    if(User.loggedIn) {
-                        ScheduleService.get(setData);
-                        RPiService.get(setData);
-                    }
-                    else {
-                        ScheduleService.clear();
-                    }
+                var setData = function() {
+                    $scope.schedules = ScheduleService.schedules;
+                    $scope.rpis = RPiService.rpis;
+                };
+                
+                var logout = function() {
+                    $scope.schedules = [];
+                    $scope.rpis = [];
+                    goToLogin();
+                };
+                
+                var getData = function() {
+                    ScheduleService.get(setData, null);
+                    RPiService.get(setData, null);
+                };
+                
+                var goToLogin = function() {
+                    $location.path('/login');
                 };
 
-                $scope.$on('user:loggedout', updateData);
-                $scope.$on('user:authorized', updateData);
-                updateData();
+                $scope.$on('user:loggedout', logout);
+                if(!User.loggedIn) {
+                    User.authorizeCookie(function(user) {
+                        user.loggedIn && getData();
+                        !user.loggedIn && goToLogin();
+                    }, goToLogin);
+                }
+                else {
+                    getData();
+                }
             })
 
             .directive("schedulesForm", function() {
@@ -97,7 +114,7 @@ define([], function() {
               };
             })
             
-            .service('ScheduleService', ['$http', function($http) {
+            .service('ScheduleService', ['$http', '$rootScope', function($http, $rootScope) {
                     
                 this.schedules = [];
         
@@ -135,6 +152,7 @@ define([], function() {
                                 $this.schedules.push(response['data'][i]);
                             }
                             
+                            $rootScope.$broadcast('schedules:refreshed',$this.data);
                             success && success(response);
                         }, 
 
