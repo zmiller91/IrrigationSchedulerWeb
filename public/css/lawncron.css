@@ -91,3 +91,7 @@ input[disabled] {
 #schedule-actions i {
     font-size:35px;
 }
+
+div[role="main"] {
+    height: 100%;
+}
