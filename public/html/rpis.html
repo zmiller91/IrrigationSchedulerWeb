@@ -18,14 +18,14 @@
                     
                                     
                     <div class="row confirmation" ng-show="pi.confirming || pi.loading">
-                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 action">
+                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                             <p><strong class="action-text">Delete?</strong></p>
                         </div>
-                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 action">
+                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
                             <button ng-click="hideConfirmation(pi)"  ng-disabled="pi.loading" 
                                     type="button" class="btn btn-danger">No</button>
                         </div>
-                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 action">
+                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
                             <button ng-click="confirm(pi)" ng-disabled="pi.loading" 
                                     type="button" class="btn btn-success">Yes</button>
                         </div>
