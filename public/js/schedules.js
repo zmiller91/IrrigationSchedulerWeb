@@ -12,6 +12,7 @@ define([], function() {
                 $scope.rpis = RPiService.rpis;
                 $scope.dows = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
                 $scope.isConfirming = false;
+                $scope.confirmText = null;
                 
                 $scope.edit = function(schedule) {
                     schedule.enabled = true;
@@ -69,16 +70,18 @@ define([], function() {
                     ScheduleService.post(schedule, stopLoading, stopLoading);
                 };
                 
-                $scope.showConfirmation = function(confirm, schedule) {
+                $scope.showConfirmation = function(text, confirm, schedule) {
                     confirmCallBack = confirm;
                     confirmSchedule = schedule;
                     $scope.isConfirming = true;
+                    $scope.confirmText = text;
                 };
                 
                 $scope.clearConfirmation = function() {
                     confirmCallBack = null;
                     confirmSchedule = null;
                     $scope.isConfirming = false;
+                    $scope.confirmText = null;
                 };
                 
                 $scope.confirm = function() {
