@@ -14,7 +14,25 @@
             <div class="x_content">
               <article class="media event">
                 <div class="media-body">
-                    <div class="row">
+                    
+                    
+                                    
+                    <div class="row confirmation" ng-show="pi.confirming || pi.loading">
+                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 action">
+                            <p><strong class="action-text">Delete?</strong></p>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 action">
+                            <button ng-click="hideConfirmation(pi)"  ng-disabled="pi.loading" 
+                                    type="button" class="btn btn-danger">No</button>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 action">
+                            <button ng-click="confirm(pi)" ng-disabled="pi.loading" 
+                                    type="button" class="btn btn-success">Yes</button>
+                        </div>
+                    </div>
+                    
+                    
+                    <div class="row" ng-show="!pi.confirming && !pi.loading">
 
                         <div class="col-lg-5 col-md-5 col-sm-5 col-xs-5">
                           <a class="title" href="">ID</a>
@@ -27,7 +45,7 @@
                         </div>
 
                         <div class="close col-lg-2 col-md-2 col-sm-2 col-xs-2">
-                          <a ng-click="remove(pi.id)"><i class="fa fa-times" aria-hidden="true" style="font-size:35px;"></i></a>
+                          <a ng-click="showConfirmation(pi)"><i class="fa fa-times" aria-hidden="true" style="font-size:35px;"></i></a>
                         </div>
                     </div>
                 </div>

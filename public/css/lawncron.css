@@ -79,12 +79,12 @@ input[disabled] {
     opacity: .65 !important;
 }
 
-#schedule-confirmation button {
+.confirmation button {
     height: 100%;
     width: 100%;
 }
 
-#schedule-confirmation p {
+.confirmation p {
     font-size: 24px;
 }
 

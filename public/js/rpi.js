@@ -8,9 +8,22 @@ define([], function() {
                 $scope.create = function () {
                     RPiService.put(update);
                 };
+                
+                $scope.showConfirmation = function(pi) {
+                    pi.confirming = true;
+                };
+                
+                $scope.hideConfirmation = function(pi) {
+                    pi.confirming = false;
+                };
+                
+                $scope.confirm = function(pi) {
+                    pi.confirming = false;
+                    remove(pi);
+                };
 
-                $scope.remove = function (id) {
-                    RPiService.delete(id, update);
+                var remove = function (pi) {
+                    RPiService.delete(pi, update);
                 };
                 
                 var update = function() {
@@ -84,24 +97,27 @@ define([], function() {
                     );
                 };
                 
-                this.delete = function(rpiId, success, error) {
+                this.delete = function(pi, success, error) {
+                    
                     var $this = this;
-                    $http.delete('api/rpi', {data: {rpi_id: rpiId}})
-                        .then(function(response) {
+                    pi.loading = true;
+                    $http.delete('api/rpi', {data: {rpi_id: pi.id}}).then(
+                            
+                        function(response) {
                             for(var i = 0; i < $this.rpis.length; i++) {
-                                if($this.rpis[i]['id'] === rpiId) {
+                                if($this.rpis[i]['id'] === pi.id) {
                                     $this.rpis.splice(i, 1);
                                     break;
                                 }
                             }
                             
-                            if (success) {
-                                success(response);
-                            }
-                        }, function(response) {
-                            if (error) {
-                                error(response);
-                            }
+                            pi.loading = false;
+                            success && success(response);
+                        }, 
+                        
+                        function(response) {
+                            pi.loading = false;
+                            error && error(response);
                         }
                     );
                 };
