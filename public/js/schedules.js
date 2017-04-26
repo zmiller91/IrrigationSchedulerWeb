@@ -3,16 +3,10 @@ define([], function() {
         init: function(app) {
             app.controller("ScheduleCtrl", function ($scope, $location, ScheduleService, RPiService, User) {
 
-                var confirmSchedule = null;
-                var confirmCallBack = null;
-
-                $scope.loading = "";
                 $scope.schedules = ScheduleService.schedules;
                 $scope.zones = [1, 2, 3, 4];
                 $scope.rpis = RPiService.rpis;
                 $scope.dows = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
-                $scope.isConfirming = false;
-                $scope.confirmText = null;
                 
                 $scope.edit = function(schedule) {
                     schedule.enabled = true;
@@ -30,22 +24,19 @@ define([], function() {
                 };
                 
                 $scope.update = function(schedule) {
-                    $scope.loading = "update";
                     if(schedule.new) {
                         ScheduleService.put(schedule, function(){
                             schedule.clone = null;
                             schedule.enabled = false;
                             schedule.new = false;
-                            stopLoading();
-                        }, stopLoading);
+                        });
                     }
                     else {
                         ScheduleService.patch(schedule, function(){
                             schedule.clone = null;
                             schedule.enabled = false;
                             schedule.new = false;
-                            stopLoading();
-                        }, stopLoading);
+                        });
                     }
                 };
                 
@@ -56,54 +47,42 @@ define([], function() {
                 };
                 
                 $scope.delete = function(schedule) {
-                    $scope.loading = "delete";
                     ScheduleService.delete(schedule, function() {
                         ScheduleService.remove(schedule);
                         $scope.schedules = ScheduleService.schedules;
-                        stopLoading();
-                    }, stopLoading);
+                    });
                 };
                 
                 $scope.play = function(schedule) {
-                    $scope.loading = "play";
                     schedule.method = "play";
-                    ScheduleService.post(schedule, stopLoading, stopLoading);
+                    ScheduleService.post(schedule);
                 };
                 
                 $scope.showConfirmation = function(text, confirm, schedule) {
-                    confirmCallBack = confirm;
-                    confirmSchedule = schedule;
-                    $scope.isConfirming = true;
-                    $scope.confirmText = text;
+                    
+                    schedule.confirm = confirm;
+                    schedule.text = text;
+                    schedule.confirming = true;
                 };
                 
-                $scope.clearConfirmation = function() {
-                    confirmCallBack = null;
-                    confirmSchedule = null;
-                    $scope.isConfirming = false;
-                    $scope.confirmText = null;
+                $scope.hideConfirmation = function(schedule) {
+                    schedule.confirm = null;
+                    schedule.text = null;
+                    schedule.confirming = false;
                 };
                 
-                $scope.confirm = function() {
-                    confirmCallBack(confirmSchedule);
-                    confirmCallBack = null;
-                    confirmSchedule = null;
+                $scope.confirm = function(schedule) {
+                    schedule.confirm(schedule);
+                    schedule.confirming = false;
                 };
                 
                 $scope.pause = function(schedule) {
-                    $scope.loading = "pause"
-                    ScheduleService.patch(schedule, stopLoading, stopLoading);
+                    ScheduleService.patch(schedule);
                 };
                 
                 $scope.stop = function(schedule) {
-                    $scope.loading = "stop";
                     schedule.method = "stop";
-                    ScheduleService.post(schedule, stopLoading, stopLoading);
-                };
-                
-                var stopLoading = function() {
-                    $scope.loading = "";
-                    $scope.clearConfirmation();
+                    ScheduleService.post(schedule);
                 };
                 
                 var clone = function(object) {
@@ -204,13 +183,16 @@ define([], function() {
                 this.post = function(schedule, success, error) {
                     
                     var $this = this;
+                    schedule.loading = true;
                     $http.post('api/schedule', schedule).then(
                             
                         function(response) {
+                            schedule.loading = false;
                             success && success(response);
                         }, 
 
                         function(response) {
+                            schedule.loading = false;
                             error && error(response);
                         }
                     );
@@ -219,13 +201,16 @@ define([], function() {
                 this.delete = function(schedule, success, error) {
                     
                     var $this = this;
+                    schedule.loading = true;
                     $http.delete('api/schedule', {data: schedule}).then(
                             
                         function(response) {
+                            schedule.loading = false;
                             success && success(response);
                         }, 
 
                         function(response) {
+                            schedule.loading = false;
                             error && error(response);
                         }
                     );
@@ -234,13 +219,16 @@ define([], function() {
                 this.patch = function(schedule, success, error) {
                     
                     var $this = this;
+                    schedule.loading = true;
                     $http.patch('api/schedule', schedule).then(
                             
                         function(response) {
+                            schedule.loading = false;
                             success && success(response);
                         }, 
 
                         function(response) {
+                            schedule.loading = false;
                             error && error(response);
                         }
                     );
@@ -249,14 +237,17 @@ define([], function() {
                 this.put = function(schedule, success, error) {
                     
                     var $this = this;
+                    schedule.loading = true;
                     $http.put('api/schedule', schedule).then(
                             
                         function(response) {
+                            schedule.loading = false;
                             schedule["id"] = response["data"]["id"];
                             success && success(response);
                         }, 
 
                         function(response) {
+                            schedule.loading = false;
                             error && error(response);
                         }
                     );

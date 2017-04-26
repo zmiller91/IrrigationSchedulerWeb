@@ -89,21 +89,21 @@
                                         </div>
                                     </div>
                                     
-                                    <div id="schedule-confirmation" class="row" ng-show="isConfirming">
+                                    <div id="schedule-confirmation" class="row" ng-show="schedule.confirming || schedule.loading">
                                         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 action">
-                                            <p><strong class="action-text">{{confirmText}}</strong></p>
+                                            <p><strong class="action-text">{{schedule.text}}</strong></p>
                                         </div>
                                         <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 action">
-                                            <button ng-click="clearConfirmation()"  ng-disabled="loading" 
+                                            <button ng-click="hideConfirmation(schedule)"  ng-disabled="schedule.loading" 
                                                     type="button" class="btn btn-danger">No</button>
                                         </div>
                                         <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 action">
-                                            <button ng-click="confirm()" ng-disabled="loading" 
+                                            <button ng-click="confirm(schedule)" ng-disabled="schedule.loading" 
                                                     type="button" class="btn btn-success">Yes</button>
                                         </div>
                                     </div>
 
-                                    <div id="schedule-actions" class="row" ng-show="!isConfirming">
+                                    <div id="schedule-actions" class="row" ng-show="!schedule.confirming && !schedule.loading">
                                         
                                         <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 action">
                                             <a ng-show="!schedule.enabled" ng-click="showConfirmation('Stop?', stop, schedule)" href>
