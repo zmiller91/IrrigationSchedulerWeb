@@ -3,11 +3,15 @@ define([], function() {
         init: function(app) {
             app.controller("ScheduleCtrl", function ($scope, $location, ScheduleService, RPiService, User) {
 
+                var confirmSchedule = null;
+                var confirmCallBack = null;
+
                 $scope.loading = "";
                 $scope.schedules = ScheduleService.schedules;
                 $scope.zones = [1, 2, 3, 4];
                 $scope.rpis = RPiService.rpis;
                 $scope.dows = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+                $scope.isConfirming = false;
                 
                 $scope.edit = function(schedule) {
                     schedule.enabled = true;
@@ -65,6 +69,24 @@ define([], function() {
                     ScheduleService.post(schedule, stopLoading, stopLoading);
                 };
                 
+                $scope.showConfirmation = function(confirm, schedule) {
+                    confirmCallBack = confirm;
+                    confirmSchedule = schedule;
+                    $scope.isConfirming = true;
+                };
+                
+                $scope.clearConfirmation = function() {
+                    confirmCallBack = null;
+                    confirmSchedule = null;
+                    $scope.isConfirming = false;
+                };
+                
+                $scope.confirm = function() {
+                    confirmCallBack(confirmSchedule);
+                    confirmCallBack = null;
+                    confirmSchedule = null;
+                };
+                
                 $scope.pause = function(schedule) {
                     $scope.loading = "pause"
                     ScheduleService.patch(schedule, stopLoading, stopLoading);
@@ -78,7 +100,8 @@ define([], function() {
                 
                 var stopLoading = function() {
                     $scope.loading = "";
-                }
+                    $scope.clearConfirmation();
+                };
                 
                 var clone = function(object) {
                     return JSON.parse(JSON.stringify(object));

@@ -88,25 +88,33 @@
                                             </div>
                                         </div>
                                     </div>
+                                    
+                                    <div id="schedule-confirmation" class="row" ng-show="isConfirming">
+                                        <div class="col-lg-6 col-md-4 col-sm-4 col-xs-4">
+                                            <p><strong class="action-text">Are you sure?</strong></p>
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                            <button ng-click="clearConfirmation()"  ng-disabled="loading" 
+                                                    type="button" class="btn btn-danger">No</button>
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                            <button ng-click="confirm()" ng-disabled="loading" 
+                                                    type="button" class="btn btn-success">Yes</button>
+                                        </div>
+                                    </div>
 
-                                    <div id="schedule-actions" class="row">
+                                    <div id="schedule-actions" class="row" ng-show="!isConfirming">
                                         
                                         <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 action">
-                                            <div ng-show="!schedule.enabled">
-                                                <i class="fa fa-refresh fa-spin fa-3x fa-fw" ng-show="loading === 'stop'"></i>
-                                                <a ng-click="stop(schedule)" ng-show="loading !== 'stop'" href>
-                                                  <i class="fa fa-stop-circle-o" aria-hidden="true"></i>
-                                                </a>
-                                            </div>
+                                            <a ng-show="!schedule.enabled" ng-click="showConfirmation(stop, schedule)" href>
+                                              <i class="fa fa-stop-circle-o" aria-hidden="true"></i>
+                                            </a>
                                         </div>
 
                                         <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 action">
-                                            <div ng-show="!schedule.enabled">
-                                                <i class="fa fa-refresh fa-spin fa-3x fa-fw" ng-show="loading === 'play'"></i>
-                                                <a ng-click="play(schedule)" ng-show="loading !== 'play'" href>
-                                                  <i class="fa fa-play-circle-o" aria-hidden="true"></i>
-                                                </a>
-                                            </div>
+                                            <a  ng-show="!schedule.enabled" ng-click="showConfirmation(play, schedule)" ng-show="loading !== 'play'" href>
+                                              <i class="fa fa-play-circle-o" aria-hidden="true"></i>
+                                            </a>
                                         </div>
 
                                         <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 action">
@@ -120,16 +128,13 @@
 
                                         <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 action">
                                             
-                                            <i class="fa fa-refresh fa-spin fa-3x fa-fw" ng-show="loading === 'delete' || loading === 'update'"></i>
-                                            <div ng-show="loading !== 'delete' && loading !== 'update'" >
-                                                <a ng-click="delete(schedule)" ng-show="!schedule.enabled" href>
-                                                  <i class="fa fa-trash-o" aria-hidden="true"></i>
-                                                </a>
+                                            <a  ng-click="showConfirmation(delete, schedule)" ng-show="!schedule.enabled" href>
+                                              <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                            </a>
 
-                                                <a ng-click="update(schedule)" ng-show="schedule.enabled" href>
-                                                  <i class="fa fa-check" aria-hidden="true"></i>
-                                                </a>
-                                            </div>
+                                            <a  ng-click="showConfirmation(update, schedule)" ng-show="schedule.enabled" href>
+                                              <i class="fa fa-check" aria-hidden="true"></i>
+                                            </a>
                                         </div>
                                     </div>
                                 </div>

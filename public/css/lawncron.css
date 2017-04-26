@@ -79,6 +79,15 @@ input[disabled] {
     opacity: .65 !important;
 }
 
+#schedule-confirmation button {
+    height: 100%;
+    width: 100%;
+}
+
+#schedule-confirmation p {
+    font-size: 24px;
+}
+
 #schedule-actions i {
     font-size:35px;
 }
