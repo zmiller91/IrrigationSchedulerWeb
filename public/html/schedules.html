@@ -90,14 +90,14 @@
                                     </div>
                                     
                                     <div id="schedule-confirmation" class="row" ng-show="isConfirming">
-                                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 action">
                                             <p><strong class="action-text">{{confirmText}}</strong></p>
                                         </div>
-                                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 action">
                                             <button ng-click="clearConfirmation()"  ng-disabled="loading" 
                                                     type="button" class="btn btn-danger">No</button>
                                         </div>
-                                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 action">
                                             <button ng-click="confirm()" ng-disabled="loading" 
                                                     type="button" class="btn btn-success">Yes</button>
                                         </div>
