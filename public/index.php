@@ -29,7 +29,8 @@
     // Assemble all the input
     $post = json_decode(file_get_contents('php://input'),true);
     $input = array_merge_recursive( 
-            !empty($post) ? $post : array(), 
+            !empty($post) ? $post : array(),
+            !empty($_POST) ? $_POST : array(),
             !empty($_GET) ? $_GET : array());
     
     // Run the service

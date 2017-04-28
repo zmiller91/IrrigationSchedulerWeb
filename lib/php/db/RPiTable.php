@@ -20,8 +20,22 @@ class RPiTable extends BaseTable {
         
         $sql = 
 <<<EOD
-            SELECT * 
-            FROM rpi
+            SELECT 
+                id,
+                user_id,
+                last_status_update,
+                created_date,
+                CASE
+                    WHEN
+                        last_status_update IS NULL
+                            OR (NOW() - INTERVAL 30 MINUTE > last_status_update)
+                    THEN
+                        'offline'
+                    WHEN (NOW() - INTERVAL 5 MINUTE > last_status_update) THEN 'unknown'
+                    ELSE 'online'
+                END AS status
+            FROM
+                rpi
             WHERE $filter;
                 
 EOD;
@@ -56,5 +70,17 @@ EOD;
 EOD;
         $this->execute($sql);
         return $key;
+    }
+
+    public function touchStatus($rpi) {
+        $id = $this->escape($rpi);
+        $sql = 
+<<<EOD
+            UPDATE rpi 
+            SET last_status_update = NOW()
+            WHERE id = "$id";
+                
+EOD;
+        return $this->execute($sql);
     }
 }
