@@ -31,7 +31,7 @@ class RPiTable extends BaseTable {
                             OR (NOW() - INTERVAL 30 MINUTE > last_status_update)
                     THEN
                         'offline'
-                    WHEN (NOW() - INTERVAL 5 MINUTE > last_status_update) THEN 'unknown'
+                    WHEN (NOW() - INTERVAL 15 MINUTE > last_status_update) THEN 'unknown'
                     ELSE 'online'
                 END AS status
             FROM
