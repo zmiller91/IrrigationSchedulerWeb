@@ -344,7 +344,7 @@ class Schedule extends Service {
             "minutes" => $time[1]
         );
         
-        if(!is_string($schedule['dow'])) {
+        if(is_string($schedule['dow'])) {
             $schedule['dow'] = explode(",", $schedule['dow']);
         }
         
