@@ -116,15 +116,15 @@ class Schedule extends Service {
     private function refreshRPis($schedules) {
         $mappedSchedules = array();
         foreach($schedules as $s) {
-            if(!array_key_exists($s["rpi_id"], $mappedSchedules)) {
-                $mappedSchedules[$s["rpi_id"]] = array();
+            $rpi = $s["rpi_id"];
+            if(!array_key_exists($rpi, $mappedSchedules)) {
+                $mappedSchedules[$rpi] = array();
             }
 
-            array_push($mappedSchedules[$s["rpi_id"]], $s);
+            array_push($mappedSchedules[$rpi], $this->formatSchedule($s));
         }
 
         foreach($mappedSchedules as $rpi => $scheduleList) {
-            
             $this->sendToRPI(
                     $rpi, 
                     array("method" => "refresh", "schedules"=> $scheduleList), 
@@ -316,6 +316,22 @@ class Schedule extends Service {
     
     private function sendScheduleToRPI($channel, $schedule, $method) {
         
+        $request = $this->formatSchedule($schedule);
+        $request['method'] = $method;
+        return $this->sendToRPi($channel, $request);
+    }
+    
+    private function sendToRPi($channel, $request) {
+        $args = $channel . ' "' . addslashes(json_encode($request)) . '"';
+        $cmd = implode(" ", array(PYTHON, RMQSEND, $args));
+        $command = exec($cmd);
+        $output = shell_exec($command);
+        $this->m_mData = $output;
+        return $output;
+    }
+    
+    private function formatSchedule($schedule) {
+        
         $duration = split(":", $schedule['duration']);
         $duration = array(
             "hours" => $duration[0],
@@ -328,26 +344,17 @@ class Schedule extends Service {
             "minutes" => $time[1]
         );
         
-        $request = array(
-            'method' => $method,
+        if(!is_string($schedule['dow'])) {
+            $schedule['dow'] = explode(",", $schedule['dow']);
+        }
+        
+        return array(
             'id' => $schedule['id'],
             'days' => $schedule['dow'],
             'time' => $time,
             'duration' => $duration,
             'zone' => $schedule['zone']
         );
-        
-        
-        return $this->sendToRPi($channel, $request);
-    }
-    
-    private function sendToRPi($channel, $request) {
-        $args = $channel . ' "' . addslashes(json_encode($request)) . '"';
-        $cmd = implode(" ", array(PYTHON, RMQSEND, $args));
-        $command = exec($cmd);
-        $output = shell_exec($command);
-        $this->m_mData = $output;
-        return $output;
     }
     
     private function validatePaths($target, $paths) {
