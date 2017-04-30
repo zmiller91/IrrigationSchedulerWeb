@@ -46,6 +46,10 @@ define([], function() {
                     $scope.edit($scope.schedules[0]);
                 };
                 
+                $scope.refresh = function() {
+                    ScheduleService.post({method: "refresh"}, null);
+                };
+                
                 $scope.delete = function(schedule) {
                     ScheduleService.delete(schedule, function() {
                         ScheduleService.remove(schedule);

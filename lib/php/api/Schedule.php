@@ -72,7 +72,7 @@ class Schedule extends Service {
             self::DELETE => array('/id'),
             self::PUT => array('/rpi', '/zone', '/name', '/start', '/duration', '/dow'),
             self::PATCH => array('/id', '/rpi', '/zone', '/name', '/start', '/duration', '/dow'),
-            self::POST => array('/method', '/id', '/rpi', '/zone', '/start', '/duration', '/dow')
+            self::POST => array('/method')
         );
         
         $validPaths = $this->validatePaths($this->m_aInput, $requiredPaths[$this->m_strMethod]);
@@ -82,14 +82,55 @@ class Schedule extends Service {
     
     protected function post() {
         
-        // Post message to RabbitMQ
-        $this->sendToRPI(
-                $this->m_aInput['rpi']['id'], 
-                $this->m_aInput, 
-                $this->m_aInput['method']
-        );
+        $success = true;
+        if($this->m_aInput['method'] === "refresh") {
+            
+            $ScheduleTable = new ScheduleTable($this->m_oConnection);
+            $schedules = $ScheduleTable->select($this->m_oUser->m_iUserId);
+            if($ScheduleTable->hasErrors()) {
+                $this->m_oError->addAll($ScheduleTable->getErrors());
+                $success = false;
+            }
+            
+            // Are you silly? I'm still gunna send it.
+            if($success) {
+                $this->refreshRPis($schedules);
+            }
+        }
         
-        return true;
+        // Otherwise, pass through
+        else {
+            $success = $this->validateScheduleFields($this->m_aInput);
+            if($success) {
+                $this->sendScheduleToRPI(
+                        $this->m_aInput['rpi']['id'], 
+                        $this->m_aInput, 
+                        $this->m_aInput['method']
+                );
+            }
+        }
+        
+        return $success;
+    }
+    
+    private function refreshRPis($schedules) {
+        $mappedSchedules = array();
+        foreach($schedules as $s) {
+            if(!array_key_exists($s["rpi_id"], $mappedSchedules)) {
+                $mappedSchedules[$s["rpi_id"]] = array();
+            }
+
+            array_push($mappedSchedules[$s["rpi_id"]], $s);
+        }
+
+        foreach($mappedSchedules as $rpi => $scheduleList) {
+            
+            $this->sendToRPI(
+                    $rpi, 
+                    array("method" => "refresh", "schedules"=> $scheduleList), 
+                    $this->m_aInput['method']
+            );
+        }
     }
     
     protected function patch() {
@@ -125,7 +166,7 @@ class Schedule extends Service {
             
             // If the RPi ID changed tell old RPi to delete schedule
             if(isset($oldSchedule[0]) && $oldSchedule[0]['rpi_id'] != $this->m_aInput['rpi']['id']) {
-                $this->sendToRPI($oldSchedule[0]['rpi_id'], $this->m_aInput, 'delete');
+                $this->sendScheduleToRPI($oldSchedule[0]['rpi_id'], $this->m_aInput, 'delete');
             }
             
             // Update the database
@@ -148,7 +189,7 @@ class Schedule extends Service {
 
             // Notify RPi
             if($success) {
-                $this->sendToRPI($this->m_aInput['rpi']['id'], $this->m_aInput, 'update');
+                $this->sendScheduleToRPI($this->m_aInput['rpi']['id'], $this->m_aInput, 'update');
             }
         }
         
@@ -177,7 +218,7 @@ class Schedule extends Service {
         
         // Notify the RPi
         if($success) {
-            $this->sendToRPI(
+            $this->sendScheduleToRPI(
                 $this->m_aInput['rpi']['id'], 
                 $this->m_aInput,
                 'delete'
@@ -261,7 +302,7 @@ class Schedule extends Service {
         if($success) {
             $rpiRequest = $this->m_aInput;
             $rpiRequest['id'] = $ScheduleTable->selectLastInsertID();
-            $this->sendToRPI(
+            $this->sendScheduleToRPI(
                 $this->m_aInput['rpi']['id'], 
                 $rpiRequest,
                 "add"
@@ -273,7 +314,7 @@ class Schedule extends Service {
         return $success;
     }
     
-    private function sendToRPI($channel, $schedule, $method) {
+    private function sendScheduleToRPI($channel, $schedule, $method) {
         
         $duration = split(":", $schedule['duration']);
         $duration = array(
@@ -297,6 +338,10 @@ class Schedule extends Service {
         );
         
         
+        return $this->sendToRPi($channel, $request);
+    }
+    
+    private function sendToRPi($channel, $request) {
         $args = $channel . ' "' . addslashes(json_encode($request)) . '"';
         $cmd = implode(" ", array(PYTHON, RMQSEND, $args));
         $command = exec($cmd);
@@ -407,12 +452,12 @@ class Schedule extends Service {
                 $validMethod = false;
             }
             else {
-                $validMethods = array('stop', 'play');
+                $validMethods = array('stop', 'play', 'refresh');
                 $validMethod = in_array($schedule['method'], $validMethods);
             }
             
             if(!$validMethod) {
-                $this->m_oError->add("`/method` must be either 'play' or 'stop'.");
+                $this->m_oError->add("`/method` must be either 'refresh', 'play', or 'stop'.");
                 $valid = false;
             }
         }
