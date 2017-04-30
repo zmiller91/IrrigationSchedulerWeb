@@ -12,9 +12,10 @@
             <button type="button" class="btn btn-primary x_panel" ng-click="create()">
                 Create
             </button>
-            <button type="button" class="btn btn-primary x_panel" ng-click="refresh()">
+            <button type="button" class="btn btn-primary x_panel" ng-click="refresh()" ng-disabled="refreshing">
                 Refresh
             </button>
+            
             <div class="x_panel" ng-repeat="schedule in schedules">
                 <div class="x_content">
                   <article class="media event">

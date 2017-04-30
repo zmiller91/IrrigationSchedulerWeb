@@ -1,0 +1,1 @@
+Sent: {"method":"refresh","schedules":[{"id":"17","days":["SUN"],"time":{"hours":"14","minutes":"12"},"duration":{"hours":"12","minutes":"12"},"zone":"1"},{"id":"18","days":["SUN"],"time":{"hours":"12","minutes":"12"},"duration":{"hours":"12","minutes":"12"},"zone":"3"}]} To: 0dde411a

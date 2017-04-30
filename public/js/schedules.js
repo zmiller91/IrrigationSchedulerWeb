@@ -7,6 +7,7 @@ define([], function() {
                 $scope.zones = [1, 2, 3, 4];
                 $scope.rpis = RPiService.rpis;
                 $scope.dows = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+                $scope.refreshing = false;
                 
                 $scope.edit = function(schedule) {
                     schedule.enabled = true;
@@ -47,7 +48,12 @@ define([], function() {
                 };
                 
                 $scope.refresh = function() {
-                    ScheduleService.post({method: "refresh"}, null);
+                    $scope.refreshing = true;
+                    ScheduleService.post({method: "refresh"}, function() {
+                        $scope.refreshing = false;
+                    }, function() {
+                        $scope.refreshing = false;
+                    });
                 };
                 
                 $scope.delete = function(schedule) {
