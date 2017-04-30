@@ -1,7 +1,7 @@
 define([], function() {
     return {
         init: function(app) {
-            app.controller("RPiCtrl", function ($scope, $location, RPiService, User) {
+            app.controller("RPiCtrl", function ($scope, $location, $timeout, RPiService, User) {
 
                 $scope.rpis = RPiService.rpis;
 
@@ -23,7 +23,9 @@ define([], function() {
                 };
 
                 var remove = function (pi) {
-                    RPiService.delete(pi, update);
+                    RPiService.delete(pi, update, function() {
+                        $timeout(function () { pi.errors = [] }, 5000);   
+                    });
                 };
                 
                 var update = function() {
@@ -112,11 +114,15 @@ define([], function() {
                             }
                             
                             pi.loading = false;
+                            pi.errors = [];
                             success && success(response);
                         }, 
                         
                         function(response) {
                             pi.loading = false;
+                            if(response.data.errors) {
+                                pi.errors = response.data.errors;
+                            }
                             error && error(response);
                         }
                     );

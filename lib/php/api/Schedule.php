@@ -97,6 +97,23 @@ class Schedule extends Service {
         $success = true;
         $ScheduleTable = new ScheduleTable($this->m_oConnection);
         
+        $schedulesInZone = $ScheduleTable->map(
+            $ScheduleTable->select(
+                $this->m_oUser->m_iUserId, 
+                $this->m_aInput['rpi']['id'], 
+                null, 
+                $this->m_aInput['zone']
+            ), 
+        array('id'));
+        
+        // Another schedule is using this zone
+        if (!empty($schedulesInZone) && !array_key_exists($this->m_aInput['id'], $schedulesInZone)) {
+            $this->m_oError->add("Schedule already tied to zone.");
+            $this->setStatusCode(422);
+            $success = false;
+            
+        }
+        
         // Get the old schedule
         $oldSchedule = $ScheduleTable->select(null, null, $this->m_aInput['id']);
         if($ScheduleTable->hasErrors()) {
@@ -207,17 +224,31 @@ class Schedule extends Service {
         $RPiTable = new RPiTable($this->m_oConnection);
         $ScheduleTable = new ScheduleTable($this->m_oConnection);
         
-        // Get rpi information and insert schedule
-        $rpi = $RPiTable->select($this->m_oUser->m_iUserId, $this->m_aInput['rpi']['id']);
-        $ScheduleTable->insert(
-                $this->m_oUser->m_iUserId,
-                $this->m_aInput['rpi']['id'],
-                $this->m_aInput['name'], 
-                $this->m_aInput['zone'], 
-                $this->m_aInput['start'], 
-                $this->m_aInput['duration'], 
-                implode(',', $this->m_aInput['dow'])
+        $schedulesInZone = $ScheduleTable->select(
+                $this->m_oUser->m_iUserId, 
+                $this->m_aInput['rpi']['id'], 
+                null, 
+                $this->m_aInput['zone']
+        );
+        
+        if(!$ScheduleTable->hasErrors() && !empty($schedulesInZone)) {
+            $this->m_oError->add("Schedule already tied to zone.");
+            $this->setStatusCode(422);
+            $success = false;
+        }
+        
+        $success = $success && !$ScheduleTable->hasErrors();
+        if ($success) {
+            $ScheduleTable->insert(
+                    $this->m_oUser->m_iUserId,
+                    $this->m_aInput['rpi']['id'],
+                    $this->m_aInput['name'], 
+                    $this->m_aInput['zone'], 
+                    $this->m_aInput['start'], 
+                    $this->m_aInput['duration'], 
+                    implode(',', $this->m_aInput['dow'])
             );
+        }
 
         // Log errors
         if($RPiTable->hasErrors() || $ScheduleTable->hasErrors()) {

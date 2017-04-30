@@ -76,11 +76,30 @@ class RPi extends Service {
     }
     
     protected function delete() {
-        $RPiTable = new RPiTable($this->m_oConnection);
-        $this->m_mData = $RPiTable->delete(
-                $this->m_oUser->m_iUserId, 
-                $this->m_aInput['rpi_id']);
         
-        return true;
+        $success = true;
+        $RPiTable = new RPiTable($this->m_oConnection);
+        $ScheduleTable = new ScheduleTable($this->m_oConnection);
+        $schedules = $ScheduleTable->select($this->m_oUser->m_iUserId, $this->m_aInput['rpi_id']);
+        if(!$ScheduleTable->hasErrors() && !empty($schedules)) {
+            $this->m_oError->add("RPi in use. Please delete or edit schedule.");
+            $this->setStatusCode(422);
+            $success = false;
+        }
+        
+        if($success) {
+            $this->m_mData = $RPiTable->delete(
+                    $this->m_oUser->m_iUserId, 
+                    $this->m_aInput['rpi_id']
+            );
+        }
+        
+        if($RPiTable->hasErrors() || $ScheduleTable->hasErrors()) {
+            $this->m_oError->addAll($RPiTable->getErrors());
+            $this->m_oError->addAll($ScheduleTable->getErrors());
+            $success = false;
+        }
+        
+        return $success;
     }
 }

@@ -1,7 +1,7 @@
 define([], function() {
     return {
         init: function(app) {
-            app.controller("ScheduleCtrl", function ($scope, $location, ScheduleService, RPiService, User) {
+            app.controller("ScheduleCtrl", function ($scope, $location, $timeout, ScheduleService, RPiService, User) {
 
                 $scope.schedules = ScheduleService.schedules;
                 $scope.zones = [1, 2, 3, 4];
@@ -50,12 +50,16 @@ define([], function() {
                     ScheduleService.delete(schedule, function() {
                         ScheduleService.remove(schedule);
                         $scope.schedules = ScheduleService.schedules;
+                    }, function() {
+                        $timeout(function () { schedule.errors = [] }, 5000);   
                     });
                 };
                 
                 $scope.play = function(schedule) {
                     schedule.method = "play";
-                    ScheduleService.post(schedule);
+                    ScheduleService.post(schedule, null, function() {
+                        $timeout(function () { schedule.errors = [] }, 5000);   
+                    });
                 };
                 
                 $scope.showConfirmation = function(text, confirm, schedule) {
@@ -82,7 +86,9 @@ define([], function() {
                 
                 $scope.stop = function(schedule) {
                     schedule.method = "stop";
-                    ScheduleService.post(schedule);
+                    ScheduleService.post(schedule, null, function() {
+                        $timeout(function () { schedule.errors = [] }, 5000);   
+                    });
                 };
                 
                 var clone = function(object) {
@@ -188,11 +194,15 @@ define([], function() {
                             
                         function(response) {
                             schedule.loading = false;
+                            schedule.errors = [];
                             success && success(response);
                         }, 
 
                         function(response) {
                             schedule.loading = false;
+                            if(response.data.errors) {
+                                schedule.errors = response.data.errors;
+                            }
                             error && error(response);
                         }
                     );
@@ -206,11 +216,15 @@ define([], function() {
                             
                         function(response) {
                             schedule.loading = false;
+                            schedule.errors = [];
                             success && success(response);
                         }, 
 
                         function(response) {
                             schedule.loading = false;
+                            if(response.data.errors) {
+                                schedule.errors = response.data.errors;
+                            }
                             error && error(response);
                         }
                     );
@@ -224,11 +238,15 @@ define([], function() {
                             
                         function(response) {
                             schedule.loading = false;
+                            schedule.errors = [];
                             success && success(response);
                         }, 
 
                         function(response) {
                             schedule.loading = false;
+                            if(response.data.errors) {
+                                schedule.errors = response.data.errors;
+                            }
                             error && error(response);
                         }
                     );
@@ -243,11 +261,15 @@ define([], function() {
                         function(response) {
                             schedule.loading = false;
                             schedule["id"] = response["data"]["id"];
+                            schedule.errors = [];
                             success && success(response);
                         }, 
 
                         function(response) {
                             schedule.loading = false;
+                            if(response.data.errors) {
+                                schedule.errors = response.data.errors;
+                            }
                             error && error(response);
                         }
                     );

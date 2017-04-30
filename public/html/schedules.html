@@ -102,6 +102,14 @@
                                                     type="button" class="btn btn-success">Yes</button>
                                         </div>
                                     </div>
+                                    
+                                    <div class="error-container col-lg-12 col-md-12 col-sm-12 col-xs-12" ng-repeat="e in schedule.errors track by $index">
+                                        <div ng-switch on="e" class="alert alert-danger">
+                                            <div>
+                                                {{e}}
+                                            </div>
+                                        </div>
+                                    </div>
 
                                     <div id="schedule-actions" class="row" ng-show="!schedule.confirming && !schedule.loading">
                                         

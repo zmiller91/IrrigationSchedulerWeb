@@ -50,6 +50,17 @@
                           <a ng-click="showConfirmation(pi)"><i class="fa fa-times" aria-hidden="true" style="font-size:35px;"></i></a>
                         </div>
                     </div>
+                    
+                    <div class="row">
+                        <div class="error-container col-lg-12 col-md-12 col-sm-12 col-xs-12" 
+                             ng-repeat="e in pi.errors track by $index">
+                            <div ng-switch on="e" class="alert alert-danger">
+                                <div>
+                                    {{e}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
               </article>
             </div>

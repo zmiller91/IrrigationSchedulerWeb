@@ -30,12 +30,13 @@ EOD;
         return $this->execute($sql);
     }
     
-    public function select($userId, $rpiId = null, $scheduleId = null) {
+    public function select($userId, $rpiId = null, $scheduleId = null, $zone = null) {
         $filter = $this->createAndEqualsFilter(
                 array(
                     "user" => $this->escape($userId),
                     "rpi_id" => $this->escape($rpiId), 
-                    "id" => $this->escape($scheduleId)
+                    "id" => $this->escape($scheduleId),
+                    "zone" => $this->escape($zone)
                 )
         );
         
