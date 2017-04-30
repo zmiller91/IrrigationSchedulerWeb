@@ -83,7 +83,7 @@
                                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                             <div class="form-group">
                                               <label>Day of Week</label>
-                                                <ui-select multiple ng-model="schedule.dow" theme="bootstrap" close-on-select="false" ng-disabled="!schedule.enabled">
+                                                <ui-select multiple ng-model="schedule.dow" theme="bootstrap" close-on-select="true" ng-disabled="!schedule.enabled">
                                                   <ui-select-match>{{$item}}</ui-select-match>
                                                   <ui-select-choices repeat="d in dows | filter:$select.search">
                                                     {{d}}
