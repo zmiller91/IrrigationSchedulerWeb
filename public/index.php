@@ -12,9 +12,13 @@
     // It it's not an api call, return main.html if the uri is index.php
     $apiRegex = "/^" . preg_quote("api/", "/") . "/";
     $match = preg_match($apiRegex, $uri);
-    if($match === 0)
-    {
-        readfile('html/main.html');
+    if($match === 0) {
+        if($uri === "" || $uri === "index.html") {
+            readfile('html/landing-page.html');
+        }
+        else {
+            readfile('html/main.html');
+        }
         return;
     }
     
