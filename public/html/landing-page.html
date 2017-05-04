@@ -172,7 +172,7 @@
                     <hr class="section-heading-spacer">
                     <div class="clearfix"></div>
                     
-                        <h2 class="section-heading">Raspberry Pi Instillation and Configuration</h2>
+                        <h2 class="section-heading">LawnTab Installation and Configuration</h2>
                         <p class="lead">
                             Most of the heavy lifting is already done, all that's 
                             needed is installation and configuration.  These instructions
@@ -183,40 +183,55 @@
                             <li>Python 2.7 installed</li>
                             <li>Git installed</li>
                         </ol>
+                        
                         <h3 class="section-heading">Install Dependencies</h3>
-                        
-                        
-                        <p class="lead">RabbitMQ and Python-Crontab</p>
                         <pre><code class="shell agate">
 $ sudo apt-get update
 $ sudo apt-get install rabbitmq-server
+$ sudo apt-get install python-pika
 $ sudo apt-get install python-crontab
-                        </code></pre>
-                        
-                        
-                        <p class="lead">Download pip if you don't already have it. 
-                        You have pip if you get the following:</p>
-                        <pre><code class="shell">
-$ which pip
-/usr/local/bin/pip
-                        </code></pre>
-                        <p class="lead">If you don't have it then you can install it.</p>
-                        <pre><code class="shell">
-$ wget https://bootstrap.pypa.io/get-pip.py
-$ sudo python get-pip.py
-                        </code></pre>
-                        
-                        
-                        <p class="lead">Pika and GPIO</p>
-                        <pre><code class="shell">
-$ sudo pip install pika
 $ sudo apt-get install python-rpi.gpio
                         </code></pre>
                         
-                        <h3 class="section-heading"">Download LawnTab</h3>
+                        <h3 class="section-heading"">Download</h3>
                         <pre><code class="shell">
 $ cd && git clone https://github.com/zmiller91/LawnCronPi.git
                         </code></pre>
+                        
+                        <h3 class="section-heading"">Configure</h3>
+                        <p>
+                            All configuration parameters are located in configuration.py.
+                            There are three main configuration parameters that need to 
+                            be set:
+                        </p>
+                        <ul>
+                            <li>python: the location of your python executable, or the output of `which python`.</li>
+                            <li>driver: the absolute path of valve_driver.py</li>
+                            <li>id: the id of your Raspberry Pi. These are generated at lawncron.com/rpis.</li>
+                        </ul>
+                        <p>
+                            All other configurations are optional.  Here's why our configuratino file looks like: 
+                        </p>
+                        <pre><code class="python">
+import logging
+
+# LawnTab configuration
+id = "6ec32790"
+python = "/usr/bin/python" # output of `which python`
+driver = "/home/pi/LawnCronPi/valve_driver.py"
+
+# RabbitMQ host
+rmq_host = "lawncron.com"
+
+# Logging
+log_file="/tmp/lclog"
+log_level = logging.INFO
+
+# Job execution
+pid_files = "/tmp/lcpids"
+cleanup_frequency = 60.0  # in seconds
+                        </code></pre>
+                        
                         
                 </div>
             </div>
@@ -226,6 +241,87 @@ $ cd && git clone https://github.com/zmiller91/LawnCronPi.git
 
     </div>
     <!-- /.content-section-a -->
+
+    <div class="content-section-b">
+
+        <div class="container">
+
+            <div class="row">
+                <div class="col-lg-5 col-sm-6">
+                    <hr class="section-heading-spacer">
+                    <div class="clearfix"></div>
+                    <h2 class="section-heading">Building the Circuit</h2>
+                    <p class="lead">
+                        There are four zones that can be turned on or off. Each 
+                        zone has a LED, mosfet transistor, and a terminal block. 
+                        The circuit also contains eight resistors and four diodes.
+                        Each zone is connected to a GPIO pin and a 12v power supply. 
+                        When the GPIO pin reads HIGH the transistor opens and the 12v 
+                        flows to the terminal block.
+                    </p>
+                    <h3>Part List</h3>
+                    <table class="table">
+                        <thead>
+                          <tr>
+                            <th></th>
+                            <th>Quantity</th>
+                            <th>Cost</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                              <td><a target="_blank" href="https://www.sparkfun.com/products/10571">Screw terminal block</a></td>
+                              <td>4</td>
+                              <td>$3.00</td>
+                          </tr>
+                          <tr>
+                              <td><a target="_blank" href="https://www.sparkfun.com/products/10213">FQP30N06L mosfet</a></td>
+                              <td>4</td>
+                              <td>$3.80</td>
+                          </tr>
+                          <tr>
+                              <td><a target="_blank" href="https://www.sparkfun.com/products/8589">Diode</a></td>
+                              <td>4</td>
+                              <td>$0.60</td>
+                          </tr>
+                          <tr>
+                              <td><a target="_blank" href="https://www.sparkfun.com/products/12062">LED</a></td>
+                              <td>4</td>
+                              <td>$0.59</td>
+                          </tr>
+                          <tr>
+                              <td><a target="_blank" href="https://www.sparkfun.com/products/11508">10K ohm resistor</a></td>
+                              <td>4</td>
+                              <td>$0.19</td>
+                          </tr>
+                          <tr>
+                              <td><a target="_blank" href="https://www.sparkfun.com/products/11507">330 ohm resistor</a></td>
+                              <td>4</td>
+                              <td>$0.19</td>
+                          </tr>
+                          <tr>
+                              <td><a target="_blank" href="https://www.sparkfun.com/products/10811">DC barrel jack</a></td>
+                              <td>1</td>
+                              <td>$0.95</td>
+                          </tr>
+                          <tr>
+                              <td></td>
+                              <td>Total:</td>
+                              <td>$9.32</td>
+                          </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-lg-5 col-lg-offset-2 col-sm-6">
+                    <iframe frameborder='0' height='448' marginheight='0' marginwidth='0' scrolling='no' src='https://circuits.io/circuits/4661050-lawn-scheduler/embed#schematic' width='650'></iframe>
+                </div>
+            </div>
+
+        </div>
+        <!-- /.container -->
+
+    </div>
+    <!-- /.content-section-b -->
 
 	<a  name="contact"></a>
     <div class="banner">
