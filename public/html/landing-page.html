@@ -250,16 +250,16 @@ cleanup_frequency = 60.0  # in seconds
                 <div class="col-lg-12 col-sm-12">
                     <hr class="section-heading-spacer">
                     <div class="clearfix"></div>
-                    <h2 class="section-heading">The Circuit</h2>
+                    <h2 class="section-heading">LawnTab Circuit</h2>
                     <p class="lead">
-                        The circuit is divided into four zones with each zone 
-                        being driven by a GPIO pin on the Raspberry Pi. The pin 
-                        connects to a latch that toggles a 12v power supply leading
-                        to a terminal block. The terminal block is connected to wires
-                        that lead to a solenoid valve. When the pin reads high, 
-                        the power supply is turned on and the valve opens;
-                        when the pin reads low the power supply is turned off and
-                        the valve closes.
+                        
+                        This circuit is a switch that provides power to a 
+                        terminal block, the circuit is cloned
+                        3 times over to produce the full 4 zone circuit. Each
+                        zone has an LED to indicate the status of the switch
+                        and is identical to the others with  the exception of 
+                        the the pin that supplies the signal. A DC barrel jack
+                        is used to connect a 12 volt power supply.
                     </p>
                 </div>
             </div>
@@ -318,13 +318,17 @@ cleanup_frequency = 60.0  # in seconds
                           </tr>
                         </tbody>
                     </table>
+                        <p class="lead">
+                            All the components listed above are compatible with
+                            solderless breadboards, prototype boards, and custom 
+                            printed circuit boards.
+                            environment.
+                        </p>
                 </div>
                 <div class="col-lg-5 col-lg-offset-2 col-sm-6">
-                    <img class="img-responsive" src="img/circuit_components.jpg" alt=""
+                    <img class="img-responsive" src="img/breadboard_001.jpg" alt=""
                          style="margin-top: 50px">
                 </div>
-            </div>
-
         </div>
         <!-- /.container -->
 
