@@ -13,12 +13,7 @@
     $apiRegex = "/^" . preg_quote("api/", "/") . "/";
     $match = preg_match($apiRegex, $uri);
     if($match === 0) {
-        if($uri === "" || $uri === "index.html") {
-            readfile('html/landing-page.html');
-        }
-        else {
-            readfile('html/main.html');
-        }
+        readfile('html/main.html');
         return;
     }
     
